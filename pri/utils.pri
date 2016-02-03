@@ -20,20 +20,24 @@
 # assume boost libraries are installed under linux
 win32|macx {
 	# boost_1_54_0 is buggy
-        BOOSTS = 43 44 45 46 47 48 49 50 51 52 53 55 56 57 58 59
+        BOOSTS = 43 44 45 46 47 48 49 50 51 52 53 55 56 57 58 59 60
 	LATESTBOOST = 0
 	for(boost, BOOSTS) {
 		exists(../src/lib/boost_1_$${boost}_0) {  
 			LATESTBOOST = $$boost
 		}
-	}
+        }
 	contains(LATESTBOOST, 0) {
 		message("Please download the boost library--you can find it at http://www.boost.org/")
 		message("Note that boost 1.54 has a bug in a function that Fritzing uses, so download some other version")
 		error("Copy the boost library to .../src/lib/, so that you have .../src/lib/boost_1_xx_0")
 	}
-	message(using boost from src/lib/boost_1_$${LATESTBOOST}_0)
-	INCLUDEPATH += src/lib/boost_1_$${LATESTBOOST}_0
+        message(using boost from src/lib/boost_1_$${LATESTBOOST}_0)
+        INCLUDEPATH += src/lib/boost_1_$${LATESTBOOST}_0/include/
+        LIBS += -L src/lib/boost_1_$${LATESTBOOST}_0/lib
+        ## Use only one of these:
+#        LIBS += -lboost_chrono-mt -lboost_system # using dynamic lib (not sure if you need that "-mt" at the end or not)
+           #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 }
 
 HEADERS += \
