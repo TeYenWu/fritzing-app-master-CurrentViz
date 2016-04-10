@@ -1037,6 +1037,18 @@ SketchToolButton *MainWindow::createExportEtchableButton(SketchAreaWidget *paren
 	return exportEtchableButton;
 }
 
+SketchToolButton *MainWindow::createExportCircuitStackButton(SketchAreaWidget *parent) {
+    QList<QAction*> actions;
+    actions << m_exportCircuitStackAct;
+    DebugDialog::debug(QString("create Circuit Button"));
+    SketchToolButton *exportEtchableButton = new SketchToolButton("Diy",parent, actions);
+    exportEtchableButton->setObjectName("exportButton");
+    exportEtchableButton->setDefaultAction(m_exportCircuitStackAct);
+    exportEtchableButton->setText(tr("CircuitStack"));
+    exportEtchableButton->setEnabledIcon();				// seems to need this to display button icon first time
+    return exportEtchableButton;
+}
+
 QWidget *MainWindow::createToolbarSpacer(SketchAreaWidget *parent) {
     QFrame *toolbarSpacer = new QFrame(parent);
 	QHBoxLayout *spacerLayout = new QHBoxLayout(toolbarSpacer);
@@ -1066,7 +1078,7 @@ QList<QWidget*> MainWindow::getButtonsForView(ViewLayer::ViewID viewId) {
 	retval << createRotateButton(parent);
 	switch (viewId) {
 		case ViewLayer::BreadboardView:
-			retval << createFlipButton(parent) << createRoutingStatusLabel(parent); 
+            retval << createFlipButton(parent) << createExportCircuitStackButton(parent)<< createRoutingStatusLabel(parent);
 			break;
 		case ViewLayer::SchematicView:
 			retval << createFlipButton(parent) <<  createAutorouteButton(parent) << createRoutingStatusLabel(parent);

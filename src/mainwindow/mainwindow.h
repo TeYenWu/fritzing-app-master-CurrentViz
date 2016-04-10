@@ -281,7 +281,8 @@ protected slots:
 	void openRecentOrExampleFile(const QString & filename, const QString & actionText);
     void print();
     void doExport();
-	void exportEtchable();
+    void exportEtchable();
+    void exportCircuitStack();
     void about();
 	void tipsAndTricks();
 	void firstTimeHelp();
@@ -507,6 +508,7 @@ protected:
     void exportSvg(double res, bool selectedItems, bool flatten);
 	void exportSvgWatermark(QString & svg, double res);
 	void exportEtchable(bool wantPDF, bool wantSVG);
+//    void exportCircuitStack();
 
 	virtual QList<QWidget*> getButtonsForView(ViewLayer::ViewID viewId);
 	const QString untitledFileName();
@@ -552,6 +554,7 @@ protected:
 	QWidget *createViewFromButton(SketchAreaWidget *parent);
 	class ExpandingLabel * createRoutingStatusLabel(SketchAreaWidget *);
 	SketchToolButton *createExportEtchableButton(SketchAreaWidget *parent);
+    SketchToolButton *createExportCircuitStackButton(SketchAreaWidget *parent);
 	SketchToolButton *createNoteButton(SketchAreaWidget *parent);
 	QWidget *createToolbarSpacer(SketchAreaWidget *parent);
 	SketchAreaWidget *currentSketchArea();
@@ -737,6 +740,7 @@ protected:
 	QAction *m_exportEagleAct;
 	QAction *m_exportGerberAct;
 	QAction *m_exportEtchablePdfAct;
+    QAction *m_exportCircuitStackAct;
 	QAction *m_exportEtchableSvgAct;
 	QAction *m_exportBomAct;
 	QAction *m_exportNetlistAct;
