@@ -3,11 +3,10 @@ import sys
 import os
 import commands
 current_path = os.path.dirname(os.path.abspath(__file__))
-source_file_path = os.path.dirname(os.path.abspath(sys.argv[1]))
+filename, file_extension = os.path.splitext(os.path.abspath(sys.argv[1]))
 xmlreader_path = current_path + "/xml_reader.py"
-print sys.argv[1]
 ( status ,  output ) = commands.getstatusoutput("python "+ xmlreader_path + " " + sys.argv[1]) 
-print  output
+print  filename
 if int(output) == 0:
 	print "short board"
 	brd = current_path + "/tmp_30.brd"
@@ -58,7 +57,7 @@ def main():
 		#print 'signal index = ' + str(signalIndex)
 		points = splitWireIntoPoints(signal)
 		addsignal(points)
-	tree.write(source_file_path + "/output.brd")
+	tree.write(filename + "_CircuitStack.brd")
 def readInputFile():
 	signalFile = open('input.txt','r')
 	signals  = []

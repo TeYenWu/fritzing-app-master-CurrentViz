@@ -3,6 +3,7 @@ import sys
 from zipfile import ZipFile
 import os
 import re
+output_fz_path = ""
 
 def main():
 	if len(sys.argv) == 2:
@@ -11,7 +12,7 @@ def main():
 		extractFile(sys.argv[1])
 		
 		# Parse from XML files
-		tree = ET.parse(os.path.dirname(os.path.abspath(sys.argv[1])) + '/output.fz')
+		tree = ET.parse(output_fz_path)
 		root = tree.getroot()
 
 		# Directly get instance using iteration.
@@ -64,10 +65,12 @@ def main():
 
 def extractFile(filepath):
 
-	current_path = os.path.dirname(os.path.abspath(sys.argv[1]))
+	file_dir_path = os.path.dirname(os.path.abspath(sys.argv[1]))
 	filename, file_extension = os.path.splitext(filepath)
+	global output_fz_path
 	if file_extension == '.fz':
-		os.rename(filepath,"output.fz")
+		output_fz_path = filepath;
+		# os.rename(filepath,"output.fz")
 	else:
 		with open(filepath, 'rb') as file:
 			z = ZipFile(file)
@@ -75,8 +78,11 @@ def extractFile(filepath):
 			for name in z.namelist():
 			
 				if '.fzp' not in name and '.fz' in name:
-					z.extract(name, current_path)
-					os.rename(current_path + "/" + name, current_path + "/output.fz")
+					z.extract(name, file_dir_path)
+					
+					output_fz_path = file_dir_path + "/" + name
+					# print output_fz_path
+					# os.rename(current_path + "/" + name, current_path + "/output.fz")
 					break
 
 def getInstances(root):
