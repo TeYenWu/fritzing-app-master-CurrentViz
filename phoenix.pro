@@ -30,7 +30,6 @@
 #
 # QTPLUGIN  += qjpeg qsqlite
 
-
 CONFIG += debug_and_release
 win32 {
 # release build using msvc 2010 needs to use Multi-threaded (/MT) for the code generation/runtime library option

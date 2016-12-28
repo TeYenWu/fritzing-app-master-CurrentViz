@@ -47,6 +47,7 @@ $Date: 2013-04-28 14:14:07 +0200 (So, 28. Apr 2013) $
 
 #include "fritzingwindow.h"
 #include "sketchareawidget.h"
+#include "settingsdialog.h"
 #include "../viewlayer.h"
 #include "../program/programwindow.h"
 #include "../svg/svg2gerber.h"
@@ -671,6 +672,7 @@ protected:
     QPointer<ReferenceModel> m_referenceModel;
     QPointer<class SketchModel> m_sketchModel;
     QPointer<class HtmlInfoView> m_infoView;
+    QPointer<class SettingsDialog> m_settingView;
     QPointer<QToolBar> m_toolbar;
 
     bool m_closing;

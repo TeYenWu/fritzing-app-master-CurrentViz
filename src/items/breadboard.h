@@ -28,13 +28,13 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 #define BREADBOARD_H
 
 #include "paletteitem.h"
-
+#include <QPainter>
 class Breadboard : public PaletteItem 
 {
 	Q_OBJECT
 
 public:
-	// after calling this constructor if you want to render the loaded svg (either from model or from file), MUST call <renderImage>
+    // after calling this constr uctor if you want to render the loaded svg (either from model or from file), MUST call <renderImage>
 	Breadboard(ModelPart *, ViewLayer::ViewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, bool doLabel);
 	~Breadboard();
 
@@ -44,6 +44,8 @@ public:
 	bool stickyEnabled();
 	bool canFindConnectorsUnder();
 
+protected:
+    virtual void paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 public:
 	bool rotation45Allowed();

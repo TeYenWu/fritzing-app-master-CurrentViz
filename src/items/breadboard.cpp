@@ -26,7 +26,6 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 
 #include "breadboard.h"
 
-
 Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, bool doLabel)
 	: PaletteItem(modelPart, viewID, viewGeometry, id, itemMenu, doLabel)
 {
@@ -60,4 +59,10 @@ bool Breadboard::stickyEnabled() {
 
 bool Breadboard::canFindConnectorsUnder() {
 	return false;
+}
+
+void Breadboard::paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    ItemBase::paintBody(painter, option, widget);
+    painter->drawLine(0,0,100,300);
 }

@@ -67,7 +67,7 @@ src/utils/ratsnestcolors.h \
 src/utils/schematicrectconstants.h \
 src/utils/s2s.h \
 src/utils/textutils.h \
-src/utils/zoomslider.h 
+src/utils/zoomslider.h
  
 SOURCES += \
 src/utils/autoclosemessagebox.cpp \
@@ -92,7 +92,7 @@ src/utils/ratsnestcolors.cpp \
 src/utils/schematicrectconstants.cpp \
 src/utils/s2s.cpp \
 src/utils/textutils.cpp \
-src/utils/zoomslider.cpp 
+src/utils/zoomslider.cpp
 
 
 

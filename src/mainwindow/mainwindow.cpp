@@ -562,6 +562,7 @@ MainWindow::~MainWindow()
     QFile::remove(m_backupFileNameAndPath);	
 	
 	delete m_sketchModel;
+    delete m_settingView;
 
 	dontKeepMargins();
 	m_setUpDockManagerTimer.stop();

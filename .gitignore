@@ -11,6 +11,9 @@ phoenix.pro.user
 # FritzingTools folder
 #####################
 #/tools
+/bins
+/release64
+/tools
 
 # visual studio folders and files #
 #####################
@@ -19,6 +22,9 @@ phoenix.pro.user
 *.sln
 *.vcxproj
 *.vcxproj.*
+
+# google drive
+*Icon?
 
 
 Makefile*

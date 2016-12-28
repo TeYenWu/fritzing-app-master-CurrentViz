@@ -21,7 +21,8 @@ HEADERS += \
     src/mainwindow/fritzingwindow.h \
     src/mainwindow/mainwindow.h \
     src/mainwindow/sketchareawidget.h \
-    
+    src/mainwindow/settingsdialog.h
+
 SOURCES += \
     src/mainwindow/fdockwidget.cpp \
     src/mainwindow/fritzingwindow.cpp \
@@ -30,5 +31,10 @@ SOURCES += \
     src/mainwindow/mainwindow_menu.cpp \
     src/mainwindow/mainwindow_dock.cpp \
     src/mainwindow/sketchareawidget.cpp \
-    
+    src/mainwindow/settingsdialog.cpp
+
+FORMS += \
+    src/mainwindow/settingsdialog.ui
+
+
 

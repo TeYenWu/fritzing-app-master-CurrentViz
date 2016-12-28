@@ -63,9 +63,11 @@ void MainWindow::createDockWindows()
 	widget->setMinimumHeight(0);
 	widget->setMaximumHeight(0);
 
-	makeDock(BinManager::Title, m_binManager, PartsBinMinHeight, PartsBinHeightDefault/*, Qt::LeftDockWidgetArea*/);
+    makeDock(BinManager::Title, m_binManager, PartsBinMinHeight, PartsBinHeightDefault/*, Qt::LeftDockWidgetArea*/);
 
     makeDock(tr("Inspector"), m_infoView, InfoViewMinHeight, InfoViewHeightDefault);
+
+    makeDock(tr("SerialPort Settings"), m_settingView, 100, 100);
 
 	makeDock(tr("Undo History"), m_undoView, UndoHistoryMinHeight, UndoHistoryDefaultHeight)->hide();
     m_undoView->setMinimumSize(DockMinWidth, UndoHistoryMinHeight);
@@ -214,6 +216,8 @@ void MainWindow::initDock() {
     m_infoView->init(false);
     connect(m_infoView, SIGNAL(clickObsoleteSignal()), this, SLOT(selectAllObsolete()));
 	//DebugDialog::debug("after html view");
+
+    m_settingView = new SettingsDialog(this);
 
 	m_binManager = new BinManager(m_referenceModel, m_infoView, m_undoStack, this);
     m_binManager->initStandardBins();
