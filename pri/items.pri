@@ -52,6 +52,7 @@ HEADERS += \
     src/items/via.h \
     src/items/virtualwire.h \
     src/items/wire.h \
+    src/items/current.h
 
 
 SOURCES += \
@@ -89,3 +90,4 @@ SOURCES += \
     src/items/via.cpp \
     src/items/virtualwire.cpp \
     src/items/wire.cpp \
+    src/items/current.cpp

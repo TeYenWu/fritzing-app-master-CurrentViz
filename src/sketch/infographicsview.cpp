@@ -73,6 +73,14 @@ void InfoGraphicsView::hoverEnterConnectorItem(QGraphicsSceneHoverEvent * event,
 		m_infoView->hoverEnterConnectorItem(this, event, item, swappingEnabled(item->attachedTo()));
 	}
 }
+void InfoGraphicsView::hoverEnterCurrent(QGraphicsSceneHoverEvent * event, Current * item) {
+    if (m_infoView == NULL) return;
+
+    if (event->modifiers() & Qt::ShiftModifier) {
+        m_hoverEnterConnectorMode = true;
+        m_infoView->hoverEnterCurrent(this, event, item);
+    }
+}
 
 void InfoGraphicsView::hoverLeaveConnectorItem(QGraphicsSceneHoverEvent * event, ConnectorItem * item){
 	if (m_infoView == NULL) return;
@@ -81,6 +89,14 @@ void InfoGraphicsView::hoverLeaveConnectorItem(QGraphicsSceneHoverEvent * event,
 		m_hoverEnterConnectorMode = false;
 		m_infoView->hoverLeaveConnectorItem(this, event, item);
 	}
+}
+void InfoGraphicsView::hoverLeaveCurrent(QGraphicsSceneHoverEvent * event, Current * item){
+    if (m_infoView == NULL) return;
+
+    if (m_hoverEnterConnectorMode) {
+        m_hoverEnterConnectorMode = false;
+        m_infoView->hoverLeaveCurrent(this, event, item);
+    }
 }
 
 void InfoGraphicsView::setInfoView(HtmlInfoView * infoView) {

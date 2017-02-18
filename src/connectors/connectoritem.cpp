@@ -216,7 +216,6 @@ parts editor support
 #include <QBitmap>
 #include <QApplication>
 #include <qmath.h>
-
 #include "../sketch/infographicsview.h"
 #include "../debugdialog.h"
 #include "bus.h"
@@ -620,10 +619,10 @@ void ConnectorItem::setUnconnectedColor() {
 
 void ConnectorItem::setHoverColor() {
 	if (m_attachedTo == NULL) return;
-
 	QBrush brush;
 	QPen pen;
 	m_attachedTo->getHoverColor(this, brush, pen, m_opacity, m_negativePenWidth, m_negativeOffsetRect);
+    DebugDialog::debug(QString("Color %1").arg(brush.color().name()));
 	setColorAux(brush, pen, true);
 }
 

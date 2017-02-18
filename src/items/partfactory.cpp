@@ -83,6 +83,7 @@ ItemBase * PartFactory::createPart( ModelPart * modelPart, ViewLayer::ViewLayerP
 
 ItemBase * PartFactory::createPartAux( ModelPart * modelPart, ViewLayer::ViewID viewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, QMenu * wireMenu, bool doLabel)
 {
+    DebugDialog::debug(QString(modelPart-> moduleID()));
 	switch (modelPart->itemType()) {
 		case ModelPart::Wire:
 		{

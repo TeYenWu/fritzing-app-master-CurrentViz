@@ -870,7 +870,6 @@ void ItemBase::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	// calling parent class so that multiple selection will work
 	// haven't yet discovered any nasty side-effect
 	QGraphicsSvgItem::mouseReleaseEvent(event);
-
 	//scene()->setItemIndexMethod(QGraphicsScene::BspTreeIndex);
 	// setCacheMode(QGraphicsItem::NoCache);
 
@@ -878,6 +877,7 @@ void ItemBase::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void ItemBase::mouseMoveEvent(QGraphicsSceneMouseEvent *)
 {   
+
 }
 
 void ItemBase::setItemPos(QPointF & loc) {
@@ -2071,7 +2071,7 @@ QRectF ItemBase::boundingRect() const
 	}
 
 	QSizeF s = frenderer->defaultSizeF();
-	QRectF r(0,0, s.width(), s.height());
+    QRectF r(0,0, s.width(), s.height());
 	return r;
 }
 

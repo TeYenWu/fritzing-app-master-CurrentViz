@@ -28,6 +28,7 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 #define BREADBOARD_H
 
 #include "paletteitem.h"
+#include "current.h"
 #include <QPainter>
 #include <QtCore/QList>
 class Breadboard : public PaletteItem 
@@ -43,6 +44,12 @@ public:
 	void hoverUpdate();
 	void paintHover(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget); 
 	bool stickyEnabled();
+    void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
+    void hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
+    void hoverLeaveEvent( QGraphicsSceneHoverEvent * event );
+    void mouseMoveEvent( QGraphicsSceneMouseEvent *event );
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent *event );
+    void addedToScene(bool temporary);
 	bool canFindConnectorsUnder();
 
 protected:
@@ -56,6 +63,9 @@ private:
 
 public:
 	bool rotation45Allowed();
+
+private:
+    Current* m_current;
 };
 
 #endif

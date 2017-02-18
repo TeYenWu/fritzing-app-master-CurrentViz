@@ -46,10 +46,10 @@ BreadboardSketchWidget::BreadboardSketchWidget(ViewLayer::ViewID viewID, QWidget
 
 void BreadboardSketchWidget::setWireVisible(Wire * wire)
 {
-	bool visible = !(wire->getTrace());
-	wire->setVisible(visible);
-	wire->setEverVisible(visible);
-	//wire->setVisible(true);					// for debugging
+    bool visible = !(wire->getTrace());
+    wire->setVisible(visible);
+    wire->setEverVisible(visible);
+//    wire->setVisible(true);					// for debugging
 }
 
 bool BreadboardSketchWidget::collectFemaleConnectees(ItemBase * itemBase, QSet<ItemBase *> & items) {
@@ -140,7 +140,7 @@ void BreadboardSketchWidget::initWire(Wire * wire, int penWidth) {
 		return;
 	}
 	wire->setPenWidth(penWidth - 2, this, (penWidth - 2) * WireHoverStrokeFactor);
-	wire->setColorString("blue", 1.0, false);
+    wire->setColorString("blue", 1.0, false);
 }
 
 const QString & BreadboardSketchWidget::traceColor(ViewLayer::ViewLayerPlacement) {
