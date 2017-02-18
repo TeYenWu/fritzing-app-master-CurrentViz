@@ -29,6 +29,7 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 
 #include "paletteitem.h"
 #include <QPainter>
+#include <QtCore/QList>
 class Breadboard : public PaletteItem 
 {
 	Q_OBJECT
@@ -45,7 +46,13 @@ public:
 	bool canFindConnectorsUnder();
 
 protected:
-    virtual void paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QVector< QVector<double> > _currentList;
+    QList< double > nodeX;
+    QList< double > nodeY;
+
+private:
+    void connectoritemPos(double pos, QList< double> &node); // filter similar position
 
 public:
 	bool rotation45Allowed();

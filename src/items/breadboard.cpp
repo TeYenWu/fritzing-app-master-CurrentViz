@@ -25,10 +25,28 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 ********************************************************************/
 
 #include "breadboard.h"
+#include "../debugdialog.h"
+#include "../connectors/connectoritem.h"
+#include <QDebug>
+#include <QtAlgorithms>
+#include <QtGlobal>
+#include <QString>
 
 Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, bool doLabel)
 	: PaletteItem(modelPart, viewID, viewGeometry, id, itemMenu, doLabel)
 {
+    // initial _currentList to 24*8 array
+    _currentList.resize(24);
+    for(int col_index = 0 ; col_index < _currentList.size() ;col_index ++){
+        _currentList[col_index].resize(8);
+    }
+
+    // assign 0 to two dimensional array
+    for(int i = 0 ; i < _currentList.size() ; i++){
+        for(int j = 0 ; j < _currentList.at(i).size() ; j++){
+            _currentList[i][j] = 0.0;
+        }
+    }
 }
 
 Breadboard::~Breadboard() {
@@ -64,5 +82,40 @@ bool Breadboard::canFindConnectorsUnder() {
 void Breadboard::paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     ItemBase::paintBody(painter, option, widget);
+    for(int i = 0;i < m_cachedConnectorItems.size(); i ++){
+        ConnectorItem* item = m_cachedConnectorItems.at(i);
+
+        Breadboard::connectoritemPos(item->mapToScene(item->boundingRect().center()).x(), nodeX);
+        Breadboard::connectoritemPos(item->mapToScene(item->boundingRect().center()).y(), nodeY);
+    }
+
+    ConnectorItem* item = m_cachedConnectorItems.at(0);
+    qDebug() << "first:" << item->mapToScene(item->boundingRect().center()).x();
+    painter->drawEllipse(item->boundingRect());
+
+    //DebugDialog::debug(QString("List Length: %1").arg(m_cachedConnectorItems.length()));
+    qSort(nodeX);
+    qSort(nodeY);
+    qDebug() << nodeX.size();
+    qDebug() <<nodeY;
+
     painter->drawLine(0,0,100,300);
+    painter->drawLine(10,10,100,300);
+}
+
+void Breadboard::connectoritemPos(double pos, QList<double> &node)
+{
+    int findPos = nodeX.indexOf(pos);
+    if(findPos == -1){ // pos not in list
+        bool isSimilar = false;
+        for(int i = 0 ; i < node.size() ; i++){ // check if similar pos
+            if(qAbs(node[i]-pos)<1){
+                similar = true;
+                break;
+            }
+        }
+        if(!isSimilar){
+            node.append(pos);
+        }
+    }
 }
