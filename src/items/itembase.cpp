@@ -130,7 +130,7 @@ QPen ItemBase::ChosenPen(QColor(255,0,0));
 QPen ItemBase::EqualPotentialPen(QColor(255,255,0));
 
 QBrush ItemBase::NormalBrush(QColor(255,0,0));
-QBrush ItemBase::HoverBrush(QColor(0,0,255));
+QBrush ItemBase::HoverBrush(QColor(0,255,0)); // yuan hover color
 QBrush ItemBase::ConnectedBrush(StandardConnectedColor);
 QBrush ItemBase::UnconnectedBrush(StandardUnconnectedColor);
 QBrush ItemBase::ChosenBrush(QColor(255,0,0));
@@ -151,7 +151,7 @@ ItemBase::ItemBase( ModelPart* modelPart, ViewLayer::ViewID viewID, const ViewGe
 
     m_squashShape = false;
 
-    //DebugDialog::debug(QString("itembase %1 %2").arg(id).arg((long) static_cast<QGraphicsItem *>(this), 0, 16));
+    //DebugDialog::debug(QString("itembase %1 %2").arg(id).arg((long) static_cast<QGraphicsItem *>(this), 0, 16));// yuan item based
 	m_hasRubberBandLeg = m_moveLock = m_hoverEnterSpaceBarWasPressed = m_spaceBarWasPressed = false;
 
 	m_moveLockItem = NULL;
@@ -660,7 +660,7 @@ void ItemBase::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 
 	m_hoverEnterSpaceBarWasPressed = false;
 	m_hoverCount++;
-    //debugInfo(QString("inc hover %1").arg(m_hoverCount));
+    debugInfo(QString("inc hover %1").arg(m_hoverCount)); // yuan: breadboard hover event
 	hoverUpdate();
 	if (infoGraphicsView != NULL) {
 		infoGraphicsView->hoverEnterItem(event, this);

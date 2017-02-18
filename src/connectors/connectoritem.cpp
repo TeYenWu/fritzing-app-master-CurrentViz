@@ -231,6 +231,7 @@ parts editor support
 #include "../utils/bezierdisplay.h"
 #include "../utils/cursormaster.h"
 #include "ercdata.h"
+#include <QDebug>
 
 /////////////////////////////////////////////////////////
 
@@ -354,11 +355,11 @@ ConnectorItem::~ConnectorItem() {
 void ConnectorItem::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 
     //debugInfo("connector hoverEnter");
-	/*
+    /*
 	QRectF sbr = this->sceneBoundingRect();
 	QPointF p = event->scenePos();
 
-	debugInfo(QString("hover %1, %2 %3 %4 %5, %6 %7")
+    debugInfo(QString("hover %1, %2 %3 %4 %5, %6 %7")
 		.arg((long) this, 0, 16)
 		.arg(sbr.left())
 		.arg(sbr.top())
@@ -367,7 +368,10 @@ void ConnectorItem::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 		.arg(p.x())
 		.arg(p.y())
 		);
-	*/
+    */
+    DebugDialog::debug(QString("yuan"));
+    //DebugDialog::debug(QString(event->scenePos().x()));
+    debugInfo(QString(""));
 
 	InfoGraphicsView * infoGraphicsView = InfoGraphicsView::getInfoGraphicsView(this);
 	if (infoGraphicsView != NULL && infoGraphicsView->spaceBarIsPressed()) {
@@ -1163,6 +1167,7 @@ void ConnectorItem::writeConnector(QXmlStreamWriter & writer, const QString & el
 {
 	//DebugDialog::debug(QString("write connector %1").arg(this->attachedToID()));
 	writer.writeStartElement(elementName);
+    DebugDialog::debug(QString(elementName));
 	writer.writeAttribute("connectorId", connectorSharedID());
 	writer.writeAttribute("modelIndex", QString::number(connector()->modelIndex()));
 	writer.writeAttribute("layer", ViewLayer::viewLayerXmlNameFromID(attachedToViewLayerID()));
@@ -1914,25 +1919,26 @@ void ConnectorItem::debugInfo(const QString & msg)
 
 #ifndef QT_NO_DEBUG
     QPointF p = sceneAdjustedTerminalPoint(NULL);
-	QString s = QString("%1 cid:%2 cname:%3 title:%4 id:%5 type:%6 inst:%7 vlid:%8 vid:%9 spec:%10 flg:%11 hy:%12 bus:%13 r:%14 sw:%15 pos:(%16 %17)")
-			.arg(msg)
-			.arg(this->connectorSharedID())
-			.arg(this->connectorSharedName())
-			.arg(this->attachedToTitle())
-			.arg(this->attachedToID())
-			.arg(this->attachedToItemType())
-			.arg(this->attachedToInstanceTitle())
-			.arg(this->attachedToViewLayerID())
-			.arg(this->attachedToViewID())
-			.arg(this->attachedToViewLayerPlacement())
-			.arg(this->attachedTo()->wireFlags()) 
-			.arg(this->m_hybrid)
-			.arg((long) this->bus(), 0, 16)
-            .arg(this->m_radius)
-            .arg(this->m_strokeWidth)
-            .arg(p.x())
-            .arg(p.y())
-            ;
+//	QString s = QString("%1 cid:%2 cname:%3 title:%4 id:%5 type:%6 inst:%7 vlid:%8 vid:%9 spec:%10 flg:%11 hy:%12 bus:%13 r:%14 sw:%15 pos:(%16 %17)")
+//			.arg(msg)
+//			.arg(this->connectorSharedID())
+//			.arg(this->connectorSharedName())
+//			.arg(this->attachedToTitle())
+//			.arg(this->attachedToID())
+//			.arg(this->attachedToItemType())
+//			.arg(this->attachedToInstanceTitle())
+//			.arg(this->attachedToViewLayerID())
+//			.arg(this->attachedToViewID())
+//			.arg(this->attachedToViewLayerPlacement())
+//			.arg(this->attachedTo()->wireFlags())
+//			.arg(this->m_hybrid)
+//			.arg((long) this->bus(), 0, 16)
+//            .arg(this->m_radius)
+//            .arg(this->m_strokeWidth)
+//            .arg(p.x())
+//            .arg(p.y())
+//            ;
+    QString s = QString("yuan: %1, pos:(%2,%3)").arg(this->connectorSharedID()).arg(p.x()).arg(p.y());
 	//s.replace(" ", "_");
 	DebugDialog::debug(s);
 #else
@@ -2009,7 +2015,7 @@ ConnectorItem * ConnectorItem::findConnectorUnder(bool useTerminalPoint, bool al
 
 void ConnectorItem::displayTooltip(ConnectorItem * ci, ConnectorItem * other)
 {
-	InfoGraphicsView * infoGraphicsView = InfoGraphicsView::getInfoGraphicsView(this);
+    InfoGraphicsView * infoGraphicsView = InfoGraphicsView::getInfoGraphicsView(this);
 	if (infoGraphicsView == NULL) return;
 
 	// Activate tooltip for destination connector. based on a patch submitted by bryant.mairs
