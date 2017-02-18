@@ -44,6 +44,7 @@ $Date: 2012-10-30 14:21:08 +0100 (Di, 30. Okt 2012) $
 #include "../items/wire.h"
 #include "../connectors/connectoritem.h"
 #include "../referencemodel/referencemodel.h"
+#include "../items/current.h"
 
 struct PropThing {
         QPointer<QLabel> m_name;
@@ -85,6 +86,9 @@ public:
 
 	void hoverEnterConnectorItem(class InfoGraphicsView *, QGraphicsSceneHoverEvent * event, ConnectorItem * item, bool swappingEnabled);
 	void hoverLeaveConnectorItem(class InfoGraphicsView *, QGraphicsSceneHoverEvent * event, ConnectorItem * item);
+
+    void hoverEnterCurrent(class InfoGraphicsView *, QGraphicsSceneHoverEvent * event, Current * item);
+    void hoverLeaveCurrent(class InfoGraphicsView *, QGraphicsSceneHoverEvent * event, Current * item);
 
 	void unregisterCurrentItem();
 	void unregisterCurrentItemIf(long id);
@@ -132,6 +136,7 @@ protected:
 	void clearPropThingPlugin(PropThing * propThing);
 	void clearPropThingPlugin(PropThing * propThing, QWidget * plugin);
 	void viewConnectorItemInfo(QGraphicsSceneHoverEvent * event, ConnectorItem* item);
+    void viewCurrentInfo(QGraphicsSceneHoverEvent * event, Current* item);
     void showLayers(bool show, ItemBase *, const QString & family, const QString & value, bool swappingEnabled);
     void makeLockFrame();
     void makeLocationFrame();

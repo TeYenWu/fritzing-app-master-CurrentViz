@@ -388,13 +388,17 @@ void HtmlInfoView::viewConnectorItemInfo(QGraphicsSceneHoverEvent *, ConnectorIt
 	}
 
 	if (m_connDescr) {
-		m_connDescr->setText(connectorItem ? tr("connected to %n item(s)", "", connectorItem->connectionsCount()) : "");
-		m_connName->setText(connector ? connector->connectorSharedName() : "");
-		m_connType->setText(connector ? Connector::connectorNameFromType(connector->connectorType()) : "");
+        m_connDescr->setText(connectorItem ? tr("connected to %n item(s)", "", connectorItem->connectionsCount()) : "");
+        m_connName->setText(connector ? connector->connectorSharedName() : "");
+        m_connType->setText(connector ? Connector::connectorNameFromType(connector->connectorType()) : "");
 	}
 
 }
+void HtmlInfoView::viewCurrentInfo(QGraphicsSceneHoverEvent *, Current * connectorItem) {
 
+
+
+}
 void HtmlInfoView::hoverEnterConnectorItem(InfoGraphicsView *igv, QGraphicsSceneHoverEvent *event, ConnectorItem * item, bool swappingEnabled) {
 	Q_UNUSED(event)
 	Q_UNUSED(swappingEnabled)
@@ -408,7 +412,16 @@ void HtmlInfoView::hoverLeaveConnectorItem(InfoGraphicsView *igv, QGraphicsScene
 	Q_UNUSED(igv);
 	viewConnectorItemInfo(event, NULL);
 }
-
+void HtmlInfoView::hoverEnterCurrent(InfoGraphicsView *igv, QGraphicsSceneHoverEvent *event, Current * item) {
+    Q_UNUSED(event)
+    Q_UNUSED(igv)
+    viewCurrentInfo(event, item);
+}
+void HtmlInfoView::hoverLeaveCurrent(InfoGraphicsView *igv, QGraphicsSceneHoverEvent *event, Current * item) {
+    Q_UNUSED(event)
+    Q_UNUSED(igv)
+    viewCurrentInfo(event, item);
+}
 void HtmlInfoView::appendStuff(ItemBase* item, bool swappingEnabled) {
 	Wire *wire = qobject_cast<Wire*>(item);
 	if (wire) {

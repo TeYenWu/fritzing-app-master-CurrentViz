@@ -151,7 +151,7 @@ ItemBase::ItemBase( ModelPart* modelPart, ViewLayer::ViewID viewID, const ViewGe
 
     m_squashShape = false;
 
-    //DebugDialog::debug(QString("itembase %1 %2").arg(id).arg((long) static_cast<QGraphicsItem *>(this), 0, 16));
+//    DebugDialog::debug(QString("itembase %1 %2").arg(id).arg((long) static_cast<QGraphicsItem *>(this), 0, 16));
 	m_hasRubberBandLeg = m_moveLock = m_hoverEnterSpaceBarWasPressed = m_spaceBarWasPressed = false;
 
 	m_moveLockItem = NULL;
@@ -870,7 +870,6 @@ void ItemBase::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	// calling parent class so that multiple selection will work
 	// haven't yet discovered any nasty side-effect
 	QGraphicsSvgItem::mouseReleaseEvent(event);
-
 	//scene()->setItemIndexMethod(QGraphicsScene::BspTreeIndex);
 	// setCacheMode(QGraphicsItem::NoCache);
 
@@ -878,6 +877,7 @@ void ItemBase::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void ItemBase::mouseMoveEvent(QGraphicsSceneMouseEvent *)
 {   
+
 }
 
 void ItemBase::setItemPos(QPointF & loc) {
@@ -2071,7 +2071,7 @@ QRectF ItemBase::boundingRect() const
 	}
 
 	QSizeF s = frenderer->defaultSizeF();
-	QRectF r(0,0, s.width(), s.height());
+    QRectF r(0,0, s.width(), s.height());
 	return r;
 }
 

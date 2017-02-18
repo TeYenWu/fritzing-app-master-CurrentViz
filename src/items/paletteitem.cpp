@@ -152,7 +152,7 @@ void PaletteItem::loadLayerKin(const LayerHash & viewLayers, ViewLayer::ViewLaye
 
 	if (m_modelPart == NULL) return;
 
-	ModelPartShared * modelPartShared = m_modelPart->modelPartShared();
+    ModelPartShared * modelPartShared = m_modelPart->modelPartShared();
 	if (modelPartShared == NULL) return;
 
 	qint64 id = m_id + 1;

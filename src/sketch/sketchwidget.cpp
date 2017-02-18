@@ -826,7 +826,7 @@ ItemBase * SketchWidget::addItemAux(ModelPart * modelPart, ViewLayer::ViewLayerP
 
 		addToScene(wire, wire->viewLayerID());
 		wire->addedToScene(temporary);
-		wire->debugInfo("add " + descr);
+        wire->debugInfo("add " + descr);
 
 		return wire;
 	}
@@ -842,7 +842,7 @@ ItemBase * SketchWidget::addItemAux(ModelPart * modelPart, ViewLayer::ViewLayerP
 
 	bool ok;
 	addPartItem(modelPart, viewLayerPlacement, (PaletteItem *) newItem, doConnectors, ok, viewID, temporary);
-	newItem->debugInfo("add part");
+    newItem->debugInfo("add part");
 	setNewPartVisible(newItem);
 	newItem->updateConnectors();
 	return newItem;
@@ -7990,7 +7990,7 @@ void SketchWidget::disconnectAll() {
 
 	QList<ConnectorItem *> connectorItems;
 	foreach (ItemBase * itemBase, itemBases) {
-		ConnectorItem * fromConnectorItem = itemBase->rightClickedConnector();
+        ConnectorItem * fromConnectorItem = itemBase->rightClickedConnector();
 		if (fromConnectorItem == NULL) continue;
 
 		if (fromConnectorItem->connectedToWires()) {

@@ -29,7 +29,7 @@ $Date: 2013-02-26 16:26:03 +0100 (Di, 26. Feb 2013) $
 #include "../items/wire.h"
 #include "../connectors/connectoritem.h"
 #include "../sketch/infographicsview.h"
-
+#include "../items/current.h"
 #include <QToolTip>
 
 FGraphicsScene::FGraphicsScene( QObject * parent) : QGraphicsScene(parent)

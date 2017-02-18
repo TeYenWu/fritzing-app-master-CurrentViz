@@ -72,7 +72,7 @@ void NonConnectorItem::paint( QPainter * painter, const QStyleOptionGraphicsItem
 
 	painter->setOpacity(m_opacity);
 
-	/*
+    /*
 	DebugDialog::debug(QString("id:%1 %2 w:%3 %4 c:%5 ec:%6 er:%7 neg:%8 w:%9")
 		.arg(attachedToID())
 		.arg(attachedToTitle())
@@ -84,7 +84,7 @@ void NonConnectorItem::paint( QPainter * painter, const QStyleOptionGraphicsItem
 		.arg(m_negativePenWidth)
 		.arg(rect().width())
 		);
-	*/
+    */
 
 	if (m_circular) {
 		painter->setBrush(brush());

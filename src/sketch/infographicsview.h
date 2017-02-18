@@ -34,6 +34,7 @@ $Date: 2012-12-17 11:27:32 +0100 (Mo, 17. Dez 2012) $
 
 #include "../items/itembase.h"
 #include "zoomablegraphicsview.h"
+#include "../items/current.h"
 
 class InfoGraphicsView : public ZoomableGraphicsView
 {
@@ -51,7 +52,8 @@ public:
 
 	virtual void hoverEnterConnectorItem(QGraphicsSceneHoverEvent * event, ConnectorItem *);
 	virtual void hoverLeaveConnectorItem(QGraphicsSceneHoverEvent * event, ConnectorItem *);
-
+    virtual void hoverEnterCurrent(QGraphicsSceneHoverEvent * event, Current *);
+    virtual void hoverLeaveCurrent(QGraphicsSceneHoverEvent * event, Current *);
 	void setInfoView(class HtmlInfoView *);
 	class HtmlInfoView * infoView();
 

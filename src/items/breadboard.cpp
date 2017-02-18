@@ -25,14 +25,26 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 ********************************************************************/
 
 #include "breadboard.h"
-
+#include "../debugdialog.h"
+//#include "current.h"
 Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, bool doLabel)
 	: PaletteItem(modelPart, viewID, viewGeometry, id, itemMenu, doLabel)
 {
+    m_current = new Current();
+//    current->paint(painter, option, widget, 20, 40);
+
+
 }
 
 Breadboard::~Breadboard() {
 }
+
+void Breadboard::addedToScene(bool temporary)
+{
+    PaletteItem::addedToScene(temporary);
+    this->scene()->addItem(m_current);
+}
+
 
 ItemBase::PluralType Breadboard::isPlural() {
 	return Plural;
@@ -46,6 +58,21 @@ void Breadboard::hoverUpdate()
 {
 }
 
+void Breadboard::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
+    PaletteItem::hoverEnterEvent(event);
+}
+void Breadboard::hoverMoveEvent ( QGraphicsSceneHoverEvent * event ){
+    PaletteItem::hoverMoveEvent(event);
+}
+void Breadboard::hoverLeaveEvent(QGraphicsSceneHoverEvent * event ){
+    PaletteItem::hoverLeaveEvent(event);
+}
+void Breadboard::mouseMoveEvent( QGraphicsSceneMouseEvent *event ){
+    PaletteItemBase::mouseMoveEvent(event);
+}
+void Breadboard::mouseReleaseEvent( QGraphicsSceneMouseEvent *event ){
+    PaletteItemBase::mouseReleaseEvent(event);
+}
 void Breadboard::paintHover(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	Q_UNUSED(painter);
@@ -64,5 +91,5 @@ bool Breadboard::canFindConnectorsUnder() {
 void Breadboard::paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     ItemBase::paintBody(painter, option, widget);
-    painter->drawLine(0,0,100,300);
+    m_current->setPos(10, 10);
 }
