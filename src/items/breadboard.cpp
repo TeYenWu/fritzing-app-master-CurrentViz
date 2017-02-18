@@ -31,7 +31,7 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 #include <QtAlgorithms>
 #include <QtGlobal>
 #include <QString>
-//#include "current.h"
+#include "current.h"
 
 Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, bool doLabel)
 	: PaletteItem(modelPart, viewID, viewGeometry, id, itemMenu, doLabel)
@@ -135,7 +135,7 @@ void Breadboard::connectoritemPos(double pos, QList<double> &node)
         bool isSimilar = false;
         for(int i = 0 ; i < node.size() ; i++){ // check if similar pos
             if(qAbs(node[i]-pos)<1){
-                similar = true;
+                isSimilar = true;
                 break;
             }
         }
