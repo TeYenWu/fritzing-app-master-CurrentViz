@@ -16,14 +16,25 @@
 #include "../sketch/infographicsview.h"
 #include "../utils/cursormaster.h"
 #define ALLMOUSEBUTTONS (Qt::LeftButton | Qt::MidButton | Qt::RightButton | Qt::XButton1 | Qt::XButton2)
-Current::Current()
+Current::Current(ConnectorItem *item1, ConnectorItem *item2)
     : QGraphicsSvgItem()
 {
     m_inactive = false;
     m_hoverEnterSpaceBarWasPressed = m_spaceBarWasPressed = false;
+    firstItem = item1;
+    secondItem = item2;
+
+    width = item1->boundingRect().width();
+    height = qAbs(item1->boundingRect().center().y()-item2->boundingRect().center().y());
+
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(ALLMOUSEBUTTONS);
     setToolTip(QString("motherfucker"));
+}
+
+Current:: ~Current()
+{
+    this->scene()->removeItem(this);
 }
 void Current::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
     InfoGraphicsView * infoGraphicsView = InfoGraphicsView::getInfoGraphicsView(this);
@@ -57,10 +68,16 @@ void Current::hoverUpdate() {
 }
 
 void Current::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    QPen myPen(Qt::black, 5, Qt::SolidLine);
+    QPen myPen(Qt::black, 10, Qt::SolidLine);
     painter->setPen(myPen);
-    painter->drawLine(1,1,100,100);
+
+    painter->drawLine(width/2, 0, width/2, height);
 }
 QRectF Current::boundingRect() const {
-    return QRectF(0, 0, 1000000, 1000000);
+    //qDebug() << firstItem->connectorSharedID();
+
+    QPointF p1 = firstItem->boundingRect().topLeft();
+    p1 = mapToScene(p1);
+
+    return QRectF(p1.x() - width/2, p1.y(), width, height);
 }
