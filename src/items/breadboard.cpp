@@ -36,20 +36,8 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, bool doLabel)
 	: PaletteItem(modelPart, viewID, viewGeometry, id, itemMenu, doLabel)
 {
-    // initial _currentList to 24*8 array
-    _currentList.resize(24);
-    for(int col_index = 0 ; col_index < _currentList.size() ;col_index ++){
-        _currentList[col_index].resize(8);
-    }
-
-    // assign 0 to two dimensional array
-    for(int i = 0 ; i < _currentList.size() ; i++){
-        for(int j = 0 ; j < _currentList.at(i).size() ; j++){
-            _currentList[i][j] = 0.0;
-        }
-    }
-    m_current = new Current();
-//    current->paint(painter, option, widget, 20, 40);
+//    m_current = new Current();
+    //current->paint(painter, option, widget, 20, 40);
 }
 
 Breadboard::~Breadboard() {
@@ -58,7 +46,16 @@ Breadboard::~Breadboard() {
 void Breadboard::addedToScene(bool temporary)
 {
     PaletteItem::addedToScene(temporary);
-    this->scene()->addItem(m_current);
+//    foreach (QVector<Current*> currents, m_currentList) {
+//        foreach (Current* current, currents) {
+//            this->scene()->addItem(current);
+//        }
+//    }
+    qDebug() << "yuanTest";
+    qDebug() << m_currentList[0][0]->boundingRect();
+    qDebug() << m_currentList[0][1]->boundingRect();
+    //this->scene()->addItem(m_currentList[0][0]);
+
 }
 
 
@@ -107,40 +104,113 @@ bool Breadboard::canFindConnectorsUnder() {
 void Breadboard::paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     ItemBase::paintBody(painter, option, widget);
-    for(int i = 0;i < m_cachedConnectorItems.size(); i ++){
-        ConnectorItem* item = m_cachedConnectorItems.at(i);
+//    for(int i = 0;i < m_cachedConnectorItems.size(); i ++){
+//        ConnectorItem* item = m_cachedConnectorItems.at(i);
+//        Breadboard::connectoritemPos(item->mapToScene(item->boundingRect().center()).x(), nodeX);
+//        Breadboard::connectoritemPos(item->mapToScene(item->boundingRect().center()).y(), nodeY);
+//    }
 
-        Breadboard::connectoritemPos(item->mapToScene(item->boundingRect().center()).x(), nodeX);
-        Breadboard::connectoritemPos(item->mapToScene(item->boundingRect().center()).y(), nodeY);
-    }
+//    ConnectorItem* item = m_cachedConnectorItems.at(0);
+//    qDebug() << "first:" << item->mapToScene(item->boundingRect().center()).x();
+//    qDebug() << "ID:" << item->connectorSharedID();
+//    //painter->drawEllipse(item->boundingRect());
+//    //painter->drawEllipse(sortConnectorsList[0]->boundingRect());
 
-    ConnectorItem* item = m_cachedConnectorItems.at(0);
-    qDebug() << "first:" << item->mapToScene(item->boundingRect().center()).x();
-    painter->drawEllipse(item->boundingRect());
+//    DebugDialog::debug(QString("List Length: %1").arg(m_cachedConnectorItems.length()));
+//    DebugDialog::debug(QString("sortList Length: %1").arg(sortConnectorItemsList.length()));
+//    qSort(nodeX);
+//    qSort(nodeY);
+//    qDebug() << nodeX.size();
+//    qDebug() <<nodeY;
 
-    //DebugDialog::debug(QString("List Length: %1").arg(m_cachedConnectorItems.length()));
-    qSort(nodeX);
-    qSort(nodeY);
-    qDebug() << nodeX.size();
-    qDebug() <<nodeY;
-
-    painter->drawLine(0,0,100,300);
-    painter->drawLine(10,10,100,300);
+//    painter->drawLine(nodeX[0],nodeY[2],nodeX[0],nodeY[4]);
+//    painter->drawLine(nodeX[3],nodeY[2],nodeX[3],nodeY[9]);
 }
 
-void Breadboard::connectoritemPos(double pos, QList<double> &node)
+//void Breadboard::connectoritemPos(double pos, QList<double> &node)
+//{
+//    int findPos = nodeX.indexOf(pos);
+//    if(findPos == -1){ // pos not in list
+//        bool isSimilar = false;
+//        for(int i = 0 ; i < node.size() ; i++){ // check if similar pos
+//            if(qAbs(node[i]-pos)<1){
+//                isSimilar = true;
+//                break;
+//            }
+//        }
+//        if(!isSimilar){
+//            node.append(pos);
+//        }
+//    }
+//}
+
+bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers, LayerAttributes & layerAttributes)
 {
-    int findPos = nodeX.indexOf(pos);
-    if(findPos == -1){ // pos not in list
-        bool isSimilar = false;
-        for(int i = 0 ; i < node.size() ; i++){ // check if similar pos
-            if(qAbs(node[i]-pos)<1){
-                isSimilar = true;
-                break;
-            }
-        }
-        if(!isSimilar){
-            node.append(pos);
-        }
+    bool flag = PaletteItem::setUpImage(modelPart, viewLayers, layerAttributes);
+
+    for(int col_index = 0 ; col_index < m_currentList.size() ;col_index ++){
+        m_currentList[col_index].clear();
     }
+    m_currentList.clear();
+
+    QList<ConnectorItem *> items = cachedConnectorItems();
+    qSort(items.begin(),items.end(), Breadboard::connectItemComparsion);
+    // initial _currentList to 24*8 array
+
+    m_currentList.resize(nRowOfCurrent);
+    for(int col_index = 0 ; col_index < m_currentList.size() ;col_index ++){
+        m_currentList[col_index].resize(8);
+    }
+
+    int count = 0;
+    int rowIndex = 0;
+    int pinIndex = 1;
+    for(int j = 0 ; j < items.size() ; j++){
+        ConnectorItem *item1 = items.at(j);
+
+        if (item1->boundingRect().center().y() > 170 ||  item1->boundingRect().center().y() < 25) // W,X,Y,Z
+            continue;
+        if (pinIndex >= 5) // fifth node
+        {
+            pinIndex = 1;
+            continue;
+        }
+
+        if  (count >= m_currentList[rowIndex].size()){
+            count = 0;
+            rowIndex++;
+            if(rowIndex >= nRowOfCurrent)
+                break;
+        }
+
+        ConnectorItem *item2 = items.at(j+1);
+        m_currentList[rowIndex][count] = new Current(item1, item2);
+        count++;
+        pinIndex++;
+    }
+
+    return flag;
+}
+
+bool Breadboard:: connectItemComparsion(ConnectorItem *item1 , ConnectorItem *item2)
+{
+
+    QPointF pos1 = item1->boundingRect().center();
+    QPointF pos2 = item2->boundingRect().center();
+
+//    if(item1->connectorSharedID().at(item1->connectorSharedID().length() -1) >= 'W')
+//        return false;
+
+    if (qAbs(pos1.x()-pos2.x()) < 0.1f)
+    {
+        if(pos1.y() < pos2.y())
+            return true;
+    }
+    else
+    {
+        if(pos1.x() < pos2.x())
+            return true;
+    }
+
+    return false;
 }
