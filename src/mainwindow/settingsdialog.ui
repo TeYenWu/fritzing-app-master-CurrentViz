@@ -2,72 +2,21 @@
 <ui version="4.0">
  <class>SettingsDialog</class>
  <widget class="QDialog" name="SettingsDialog">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>383</width>
-    <height>274</height>
+    <width>410</width>
+    <height>248</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="selectBox">
-     <property name="title">
-      <string>Select Serial Port</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QComboBox" name="serialPortInfoListBox"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="descriptionLabel">
-        <property name="text">
-         <string>Description:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="manufacturerLabel">
-        <property name="text">
-         <string>Manufacturer:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="serialNumberLabel">
-        <property name="text">
-         <string>Serial number:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="locationLabel">
-        <property name="text">
-         <string>Location:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="vidLabel">
-        <property name="text">
-         <string>Vendor ID:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="pidLabel">
-        <property name="text">
-         <string>Product ID:</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="0" column="1">
     <widget class="QGroupBox" name="parametersBox">
      <property name="title">
@@ -84,59 +33,45 @@
       <item row="0" column="1">
        <widget class="QComboBox" name="baudRateBox"/>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="dataBitsLabel">
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="selectBox">
+     <property name="title">
+      <string>Select Serial Port</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <widget class="QComboBox" name="serialPortInfoListBox"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Data bits:</string>
+         <string>Port</string>
         </property>
        </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="dataBitsBox"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="parityLabel">
-        <property name="text">
-         <string>Parity:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="parityBox"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="stopBitsLabel">
-        <property name="text">
-         <string>Stop bits:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="stopBitsBox"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="flowControlLabel">
-        <property name="text">
-         <string>Flow control:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QComboBox" name="flowControlBox"/>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+   <item row="4" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="statusLabel">
+       <property name="text">
+        <string>Status: Disconnected</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QPushButton" name="connectButton">
        <property name="text">
         <string>Connect</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="2" column="1">
       <widget class="QPushButton" name="disconnectButton">
        <property name="text">
         <string>DisConnect</string>

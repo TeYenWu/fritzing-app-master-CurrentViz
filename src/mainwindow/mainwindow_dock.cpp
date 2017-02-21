@@ -67,7 +67,7 @@ void MainWindow::createDockWindows()
 
     makeDock(tr("Inspector"), m_infoView, InfoViewMinHeight, InfoViewHeightDefault);
 
-    makeDock(tr("SerialPort Settings"), m_settingView, 100, 100);
+    makeDock(tr("CurrentViz Settings"), m_settingView, 100, 100);
 
 	makeDock(tr("Undo History"), m_undoView, UndoHistoryMinHeight, UndoHistoryDefaultHeight)->hide();
     m_undoView->setMinimumSize(DockMinWidth, UndoHistoryMinHeight);

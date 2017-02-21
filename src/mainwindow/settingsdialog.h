@@ -37,8 +37,7 @@
 
 #include "console.h"
 #include <QDialog>
-#include <QtSerialPort/QSerialPort>
-
+#include "../utils/currentVizThread.h"
 QT_USE_NAMESPACE
 
 QT_BEGIN_NAMESPACE
@@ -72,7 +71,6 @@ public:
 
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
-
     Settings settings() const;
 
 private slots:
@@ -80,10 +78,16 @@ private slots:
     void disconnectSerialPort();
     void connectSerialPort();
     void writeData(const QByteArray &data);
-    void readData();
+    void readData(CurrentValue* current);
     void checkCustomBaudRatePolicy(int idx);
     void checkCustomDevicePathPolicy(int idx);
-    void handleError(QSerialPort::SerialPortError error);
+    void handleError(QString error);
+    void onConnected();
+    void onDisconnected();
+signals:
+    void connectCurrentViz(QString name, qint32 baudRate);
+    void disconnectCurrentViz();
+    void closeCurrentViz();
 
 private:
     void fillPortsParameters();
@@ -94,8 +98,6 @@ private:
 private:
     Ui::SettingsDialog *ui;
     Settings currentSettings;
-    QSerialPort *serial;
-    Console *console;
     QIntValidator *intValidator;
 };
 
