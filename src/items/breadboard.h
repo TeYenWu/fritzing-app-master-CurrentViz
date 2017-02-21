@@ -54,12 +54,15 @@ public:
 
 protected:
     void paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QVector< QVector<double> > _currentList;
-    QList< double > nodeX;
-    QList< double > nodeY;
+    bool setUpImage(ModelPart* modelPart, const LayerHash & viewLayers, LayerAttributes &);
+    QVector< QVector<Current *> > m_currentList;
+//    QList< double > nodeX;
+//    QList< double > nodeY;
 
 private:
     void connectoritemPos(double pos, QList< double> &node); // filter similar position
+    static bool connectItemComparsion( ConnectorItem *item1 ,  ConnectorItem *item2);
+    const int nRowOfCurrent = 24;
 
 public:
 	bool rotation45Allowed();
