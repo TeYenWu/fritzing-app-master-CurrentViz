@@ -46,7 +46,7 @@ private:
     qint32 baudRate;
     bool m_stop;
     bool m_close;
-    uint8_t m_row;
-    uint8_t m_pin;
+    unsigned char m_row;
+    unsigned char m_pin;
 };
 #endif // CURRENTVIZTHREAD_H
