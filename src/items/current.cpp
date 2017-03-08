@@ -86,7 +86,7 @@ void Current::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     QRectF tri = this->boundingRect();
     QPointF points[3]= {QPointF(tri.left(),tri.center().y()),QPointF(tri.center().x(),tri.bottom()),QPointF(tri.right(),tri.center().y())};
-    painter->drawConvexPolygon(points, 3);
+//    painter->drawConvexPolygon(points, 3);
 //    painter->drawLine(this->boundingRect().center().x(),this->boundingRect().top(),this->boundingRect().center().x(),this->boundingRect().bottom());
 //    painter->drawLine(p1.x()+width/2, p1.y(), p1.x()+width/2, p1.y()+height);
 }

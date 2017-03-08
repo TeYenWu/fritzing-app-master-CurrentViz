@@ -38,6 +38,7 @@
 #include "console.h"
 #include <QDialog>
 #include "../utils/currentVizThread.h"
+#include "../utils/circuitsensethread.h"
 QT_USE_NAMESPACE
 
 QT_BEGIN_NAMESPACE
@@ -78,7 +79,7 @@ private slots:
     void disconnectSerialPort();
     void connectSerialPort();
     void writeData(const QByteArray &data);
-    void readData(CurrentValue* current);
+    void readData(CircuitSenseThreadData* data);
     void checkCustomBaudRatePolicy(int idx);
     void checkCustomDevicePathPolicy(int idx);
     void handleError(QString error);
