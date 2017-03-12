@@ -245,6 +245,7 @@ SketchWidget::SketchWidget(ViewLayer::ViewID viewID, QWidget *parent, int size, 
 
 	setMouseTracking(true);
 
+
 }
 
 SketchWidget::~SketchWidget() {
@@ -657,10 +658,11 @@ void SketchWidget::handleConnect(QDomElement & connect, ModelPart * mp, const QS
 	QString already = ((mp->modelIndex() <= modelIndex) ? QString("%1.%2.%3.%4.%5.%6") : QString("%4.%5.%6.%1.%2.%3"))
 						.arg(mp->modelIndex()).arg(fromConnectorID).arg(fromViewLayerID)
 						.arg(modelIndex).arg(toConnectorID).arg(toViewLayerID);
-	if (alreadyConnected.contains(already)) return;
-
+    if (alreadyConnected.contains(already)){
+        return;
+    }
+    DebugDialog::debug(already);
 	alreadyConnected.append(already);
-
 	if (parentCommand == NULL) {
 		ItemBase * fromBase = newItems.value(mp->modelIndex(), NULL);
 		ItemBase * toBase = newItems.value(modelIndex, NULL);
@@ -724,26 +726,26 @@ void SketchWidget::setWireExtras(long newID, QDomElement & extras)
 
 	wire->setExtras(extras, this);
 }
-
 ItemBase * SketchWidget::addItem(const QString & moduleID, ViewLayer::ViewLayerPlacement viewLayerPlacement, BaseCommand::CrossViewType crossViewType, const ViewGeometry & viewGeometry, long id, long modelIndex,  AddDeleteItemCommand * originatingCommand) {
 	if (m_referenceModel == NULL) return NULL;
-
 	ItemBase * itemBase = NULL;
+    ItemBase * registorItem = NULL;
 	ModelPart * modelPart = m_referenceModel->retrieveModelPart(moduleID);
-
+    ModelPart * registor = m_referenceModel->retrieveModelPart(QString("ResistorModuleID"));
 	if (modelPart != NULL) {
         if (!m_blockUI) {
 		    QApplication::setOverrideCursor(Qt::WaitCursor);
 		    statusMessage(tr("loading part"));
         }
-		itemBase = addItem(modelPart, viewLayerPlacement, crossViewType, viewGeometry, id, modelIndex, originatingCommand);
+        itemBase = addItem(modelPart, viewLayerPlacement, crossViewType, viewGeometry, id, modelIndex, originatingCommand);
+        //registorItem = addItem(registor, viewLayerPlacement, crossViewType, viewGeometry, id, modelIndex, originatingCommand);
         if (!m_blockUI) {
 		    statusMessage(tr("done loading"), 2000);
 		    QApplication::restoreOverrideCursor();
         }
 	}
 
-	return itemBase;
+    return itemBase;
 }
 
 
@@ -773,7 +775,6 @@ ItemBase * SketchWidget::addItem(ModelPart * modelPart, ViewLayer::ViewLayerPlac
 	
 		newItem = addItemAux(modelPart, viewLayerPlacement, viewGeometry, id, true, m_viewID, false);
 	}
-
 	if (crossViewType == BaseCommand::CrossView) {
 		//DebugDialog::debug(QString("emit item added"));
 		emit itemAddedSignal(modelPart, newItem, viewLayerPlacement, viewGeometry, id, originatingCommand ? originatingCommand->dropOrigin() : NULL);
@@ -801,7 +802,7 @@ ItemBase * SketchWidget::addItemAux(ModelPart * modelPart, ViewLayer::ViewLayerP
 		modelPart->initConnectors();    // is a no-op if connectors already in place
 	}
 
-	ItemBase * newItem = PartFactory::createPart(modelPart, viewLayerPlacement, viewID, viewGeometry, id, m_itemMenu, m_wireMenu, true);
+    ItemBase * newItem = PartFactory::createPart(modelPart, viewLayerPlacement, viewID, viewGeometry, id, m_itemMenu, m_wireMenu, true);
 	Wire * wire = qobject_cast<Wire *>(newItem);
 	if (wire) {
 
@@ -844,8 +845,9 @@ ItemBase * SketchWidget::addItemAux(ModelPart * modelPart, ViewLayer::ViewLayerP
 	addPartItem(modelPart, viewLayerPlacement, (PaletteItem *) newItem, doConnectors, ok, viewID, temporary);
     newItem->debugInfo("add part");
 	setNewPartVisible(newItem);
-	newItem->updateConnectors();
+    newItem->updateConnectors();
 	return newItem;
+
 }
 
 
@@ -5025,7 +5027,7 @@ void SketchWidget::changeConnectionAux(long fromID, const QString & fromConnecto
 				.arg(fromID).arg(fromConnectorID)
 				.arg(toID).arg(toConnectorID)
 				.arg(connect).arg(m_viewID) );
-
+    m_connected = connect;
 	ItemBase * fromItem = findItem(fromID);
 	if (fromItem == NULL) {
 		DebugDialog::debug(QString("change connection exit 1 %1").arg(fromID));
@@ -5727,7 +5729,7 @@ void SketchWidget::wireJoinSlot(Wire* wire, ConnectorItem * clickedConnectorItem
 		b0.copy(toWire->curve());
 		b1.copy(wire->curve());
 		b0.set_endpoints(toWire->line().p1(), toWire->line().p2());
-		b1.set_endpoints(wire->line().p1(), wire->line().p2());
+        b1.set_endpoints(wire->line().p1(), wire->line().p2());
 		b1.translate(wire->pos() - toWire->pos());
 	}
 	new ChangeWireCommand(this, wire->id(), wire->line(), newLine, wire->pos(), newPos, true, false, parentCommand);

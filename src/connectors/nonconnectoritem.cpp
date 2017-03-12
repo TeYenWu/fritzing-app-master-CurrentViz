@@ -52,6 +52,7 @@ NonConnectorItem::NonConnectorItem(ItemBase * attachedTo) : QGraphicsRectItem(at
 	setFlag(QGraphicsItem::ItemIsMovable, false);
 	setFlag(QGraphicsItem::ItemIsSelectable, false);
 	setFlag(QGraphicsItem::ItemIsFocusable, false);
+//    DebugDialog::debug("removed");
 }
 
 NonConnectorItem::~NonConnectorItem() {

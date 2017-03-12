@@ -328,26 +328,24 @@ ConnectorItem::ConnectorItem( Connector * connector, ItemBase * attachedTo )
 	if (connector != NULL) {
 		connector->addViewItem(this);
 	}
+
     setAcceptHoverEvents(true);
     this->setCursor((attachedTo && attachedTo->itemType() == ModelPart::Wire) ? *CursorMaster::BendpointCursor : *CursorMaster::MakeWireCursor);
 
-	//DebugDialog::debug(QString("%1 attached to %2")
-			//.arg(this->connector()->connectorShared()->id())
-			//.arg(attachedTo->modelPartShared()->title()) );
 }
 
 ConnectorItem::~ConnectorItem() {
 	m_equalPotentialDisplayItems.removeOne(this);
-	//DebugDialog::debug(QString("deleting connectorItem %1").arg((long) this, 0, 16));
+//    DebugDialog::debug(QString("deleting connectorItem %1").arg((long) this, 0, 16));
 	foreach (ConnectorItem * connectorItem, m_connectedTo) {
 		if (connectorItem != NULL) {
 			//DebugDialog::debug(QString("temp remove %1 %2").arg(this->attachedToID()).arg(connectorItem->attachedToID()));
 			connectorItem->tempRemove(this, this->attachedToID() != connectorItem->attachedToID());
 		}
-	}
+    }
 	if (this->connector() != NULL) {
 		this->connector()->removeViewItem(this);
-	}
+    }
 	clearCurves();
 }
 
@@ -368,7 +366,7 @@ void ConnectorItem::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 		.arg(p.y())
 		);
     */
-    DebugDialog::debug(QString("yuan"));
+    //DebugDialog::debug(QString("yuan"));
     //DebugDialog::debug(QString(event->scenePos().x()));
     debugInfo(QString(""));
 
@@ -378,7 +376,7 @@ void ConnectorItem::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 		event->ignore();
 		return;
 	}
-
+    DebugDialog::debug(QString(connectedTo(this)));
 	//DebugDialog::debug("---CI set override cursor");
 	CursorMaster::instance()->addCursor(this, cursor());
 	bool setDefaultCursor = true;
@@ -468,14 +466,27 @@ bool ConnectorItem::connectorHovering() {
 
 void ConnectorItem::connectTo(ConnectorItem * connected) {
 	if (m_connectedTo.contains(connected)) return;
-
 	m_connectedTo.append(connected);
-	//DebugDialog::debug(QString("connect to cc:%4 this:%1 to:%2 %3").arg((long) this, 0, 16).arg((long) connected, 0, 16).arg(connected->attachedTo()->modelPartShared()->title()).arg(m_connectedTo.count()) );
+    m_connected = true;
+    DebugDialog::debug(QString("connect to cc:%4 this:%1 to:%2 %3").arg((long) this, 0, 16).arg((long) connected, 0, 16).arg(connected->attachedTo()->modelPartShared()->title()).arg(m_connectedTo.count()) );
     QList<ConnectorItem *> visited;
 	restoreColor(visited);
 	if (m_attachedTo != NULL) {
 		m_attachedTo->connectionChange(this, connected, true);
 	}
+}
+void ConnectorItem::setBranchValue(bool value){
+    if(value) // in
+        inOrOut = 1;
+    else // out
+        inOrOut = 2;
+}
+
+bool ConnectorItem::isConnected(){
+    if(m_connected)
+        return true;
+    else
+        return false;
 }
 
 ConnectorItem * ConnectorItem::removeConnection(ItemBase * itemBase) {
@@ -504,10 +515,12 @@ void ConnectorItem::removeConnection(ConnectorItem * connectedItem, bool emitCha
 
 	m_connectedTo.removeOne(connectedItem);
     QList<ConnectorItem *> visited;
+    m_connected = false;
+    inOrOut = 0;
 	restoreColor(visited);
 	if (emitChange) {
 		m_attachedTo->connectionChange(this, connectedItem, false);
-	}
+    }
 }
 
 void ConnectorItem::tempConnectTo(ConnectorItem * item, bool applyColor) {
@@ -621,8 +634,20 @@ void ConnectorItem::setHoverColor() {
 	if (m_attachedTo == NULL) return;
 	QBrush brush;
 	QPen pen;
+    QColor red(Qt::red);
+    QColor blue(Qt::blue);
 	m_attachedTo->getHoverColor(this, brush, pen, m_opacity, m_negativePenWidth, m_negativeOffsetRect);
-    DebugDialog::debug(QString("Color %1").arg(brush.color().name()));
+    if(this->isConnected())
+    {
+        if(inOrOut == 1){
+            pen.setColor(red);
+            brush.setColor(red);
+        }
+        else if(inOrOut == 2){
+            pen.setColor(blue);
+            brush.setColor(blue);
+        }
+    }
 	setColorAux(brush, pen, true);
 }
 

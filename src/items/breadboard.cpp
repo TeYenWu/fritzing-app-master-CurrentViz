@@ -27,23 +27,42 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 #include "breadboard.h"
 #include "../debugdialog.h"
 #include "../connectors/connectoritem.h"
+#include "../mainwindow/settingsdialog.h"
 #include <QDebug>
 #include <QtAlgorithms>
 #include <QtGlobal>
 #include <QString>
 #include "current.h"
 
+
 Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, bool doLabel)
 	: PaletteItem(modelPart, viewID, viewGeometry, id, itemMenu, doLabel)
 {
-
+    CurrentVizThread* thread = CurrentVizThread::getInstantce();
+    connect(thread, &CurrentVizThread::readyRead, this, &Breadboard::readData, Qt::BlockingQueuedConnection);
 }
 
 Breadboard::~Breadboard() {
     // destructor currentItem
-    for(int col_index = 0 ; col_index < m_currentList.size() ; col_index ++){
-        for(int row_index = 0 ; row_index < 8 ; row_index ++){
+    for(int col_index = 0 ; col_index < 24 ; col_index ++){
+        for(int row_index = 0 ; row_index < 10 ; row_index ++){
             delete m_currentList[col_index][row_index];
+        }
+    }
+    for(int col_index = 0 ; col_index < 24 ; col_index ++){
+        for(int row_index = 0 ; row_index < 10 ; row_index ++){
+            delete b_currentList[col_index][row_index];
+        }
+    }
+}
+
+void Breadboard::test(){
+    for(int i = 0; i < 24; i++){
+        for(int j = 0; j < 10; j++){
+            if(j == 4 || j == 9){
+                continue;
+            }
+            m_currentList[i][j]->start();
         }
     }
 }
@@ -54,11 +73,15 @@ void Breadboard::addedToScene(bool temporary)
     foreach (QVector<Current*> currents, m_currentList) {
         foreach (Current* current, currents) {
             this->scene()->addItem(current);
-            current->setZValue(2); // move currentItem to top of scene
-        }
-    }
-//    this->scene()->addItem(m_currentList[1][2]);
-//    m_currentList[1][2]->setZValue(2); // move currentItem to top of scene
+            current->setZValue(3); // move currentItem to top of scene
+         }
+     }
+    foreach (QVector<Current*> b_currents, b_currentList) {
+        foreach (Current* b_current, b_currents) {
+            this->scene()->addItem(b_current);
+            b_current->setZValue(3); // move currentItem to top of scene
+         }
+     }
 }
 
 
@@ -76,7 +99,56 @@ void Breadboard::hoverUpdate()
 
 void Breadboard::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
     PaletteItem::hoverEnterEvent(event);
+    for(int i = 0; i < 24; i++){
+        for(int j = 0; j < 10; j++){
+            if(j == 4 || j == 9){
+                continue;
+            }
+//            if(i == 3 && j < 4)
+            m_currentList[i][j]->start();
+        }
+    }
+//    QTimer *timer = new QTimer(this);
+//    connect(timer, SIGNAL(timeout()), this, SLOT(test()));
+//    timer->start(1000);
 }
+//void Breadboard::setUpBranchCurrent(){
+//    for(int i = 0; i < items.size(); i++)
+//    {
+//        ConnectorItem *item = items.at(i);
+//        if(item->isConnected()){
+//            connectNum.append(i);
+//            if(i % 5 == 0){
+//                if(m_currentList[connectNum.at(0)/10][connectNum.at(0)%10]->getCurrentValue() > m_currentList[connectNum.at(0) / 10][(connectNum.at(0)+1) % 10]->getCurrentValue())
+//                    item->setBranchValue(true);
+//                else
+//                    item->setBranchValue(false);
+//            }
+//            else if(i % 5 == 4){
+//                if(m_currentList[connectNum.at(0)/10][connectNum.at(0)%10]->getCurrentValue() > m_currentList[connectNum.at(0) / 10][(connectNum.at(0)-1) % 10]->getCurrentValue())
+//                    item->setBranchValue(true);
+//                else
+//                    item->setBranchValue(false);
+//            }
+//            else{
+//                if(m_currentList[connectNum.at(0)/10][connectNum.at(0)%10]->getCurrentValue() > m_currentList[connectNum.at(0) / 10][(connectNum.at(0)-1) % 10]->getCurrentValue()
+//                        || m_currentList[connectNum.at(0)/10][connectNum.at(0)%10]->getCurrentValue() > m_currentList[connectNum.at(0) / 10][(connectNum.at(0)+1) % 10]->getCurrentValue())
+//                    item->setBranchValue(true);
+//                else
+//                    item->setBranchValue(false);
+//            }
+//            item->setHoverColor();
+//        }
+//        if(connectNum.size()!=0){
+//            if(i == items.size() - 1){
+//                DebugDialog::debug(QString("item%1 connected item%2").arg(connectNum.at(0)).arg(connectNum.at(1)));
+//                b_currentList[connectNum.at(0)/10][connectNum.at(0)%10]->show();
+//            }
+//        }
+//    }
+//    connectNum.clear();
+//}
+
 void Breadboard::hoverMoveEvent ( QGraphicsSceneHoverEvent * event ){
     PaletteItem::hoverMoveEvent(event);
 }
@@ -134,6 +206,9 @@ void Breadboard::paintBody(QPainter *painter, const QStyleOptionGraphicsItem *op
 //    painter->drawLine(0,0,100,100);
 //    painter->drawLine(nodeX[3],nodeY[2],nodeX[3],nodeY[9]);
 }
+void Breadboard::readData(CurrentValue *current){
+    m_currentList[current->row][current->pin]->setCurrentValue(current->value);
+}
 
 bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers, LayerAttributes & layerAttributes)
 {
@@ -149,29 +224,29 @@ bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers,
         }
     }
 
-    QList<ConnectorItem *> items = cachedConnectorItems();
+    items = cachedConnectorItems();
     qSort(items.begin(),items.end(), Breadboard::connectItemComparsion);
-
     // initial _currentList to 24*8 array
     m_currentList.resize(nRowOfCurrent);
     for(int col_index = 0 ; col_index < m_currentList.size() ;col_index ++){
-        m_currentList[col_index].resize(8);
+        m_currentList[col_index].resize(10);
     }
-
+    b_currentList.resize(nRowOfCurrent);
+    for(int col_index = 0 ; col_index < b_currentList.size() ;col_index ++){
+        b_currentList[col_index].resize(10);
+    }
     int count = 0;
     int rowIndex = 0;
     int pinIndex = 1;
     for(int j = 0 ; j < items.size() ; j++){
         ConnectorItem *item1 = items.at(j);
-
-        if (item1->boundingRect().center().y() > 170 ||  item1->boundingRect().center().y() < 25) // W,X,Y,Z
+        if (item1->boundingRect().center().y() > 150 || item1->boundingRect().center().y() < 40){
             continue;
+        }
         if (pinIndex >= 5) // fifth node
         {
             pinIndex = 1;
-            continue;
         }
-
         if  (count >= m_currentList[rowIndex].size()){
             count = 0;
             rowIndex++;
@@ -180,7 +255,32 @@ bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers,
         }
 
         ConnectorItem *item2 = items.at(j+1);
-        m_currentList[rowIndex][count] = new Current(item1, item2);
+        m_currentList[rowIndex][count] = new Current(item1, item2, true);
+        count++;
+        pinIndex++;
+    }
+    count = 0;
+    pinIndex = 1;
+    rowIndex = 0;
+    for(int j = 0 ; j < items.size() ; j++){
+        ConnectorItem *item1 = items.at(j);
+        if (item1->boundingRect().center().y() > 170 || item1->boundingRect().center().y() < 25){
+            continue;
+        }
+        if (pinIndex >= 5) // fifth node
+        {
+            pinIndex = 1;
+        }
+        if  (count >= b_currentList[rowIndex].size()){
+            count = 0;
+            rowIndex++;
+            if(rowIndex >= nRowOfCurrent)
+                break;
+        }
+
+        ConnectorItem *item2 = items.at(j+1);
+//        m_currentList[rowIndex][count] = new Current(item1, item2, true);
+        b_currentList[rowIndex][count] = new Current(item1, item2, false);
         count++;
         pinIndex++;
     }

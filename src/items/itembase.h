@@ -93,7 +93,7 @@ public:
 	void setViewLayerID(ViewLayer::ViewLayerID, const LayerHash & viewLayers);
 	void setViewLayerID(const QString & layerName, const LayerHash & viewLayers);
 	bool topLevel();
-
+    QRectF currentUsedBoundingRect(QPointF position) const;
 	void collectConnectors(ConnectorPairHash & connectorHash, SkipCheckFunction);
 
 	virtual void busConnectorItems(class Bus * bus, ConnectorItem *, QList<ConnectorItem *> & items);
