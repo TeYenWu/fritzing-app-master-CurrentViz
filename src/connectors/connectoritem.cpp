@@ -727,7 +727,7 @@ void ConnectorItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
 	QGraphicsRectItem::mouseReleaseEvent(event);
 }
-
+//void ConnectorItem::getdraggingLegIndex
 void ConnectorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 	if (m_rubberBandLeg) {
 		int bendpointIndex;

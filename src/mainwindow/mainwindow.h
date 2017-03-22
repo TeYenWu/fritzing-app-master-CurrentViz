@@ -342,6 +342,8 @@ protected slots:
     void alignTop();
     void alignHorizontalCenter();
     void alignBottom();
+    void changeItem();
+    void customItem();
 	void rotate90cw();
 	void rotate90ccw();
 	void rotate180();
@@ -614,6 +616,7 @@ protected:
     virtual void createWindowMenu();
     virtual void createTraceMenus();
     virtual void createHelpMenu();
+    virtual void createChangeItemmenu(QMenu * parentMenu);
     virtual void createRotateSubmenu(QMenu * parentMenu);
     virtual void createZOrderSubmenu(QMenu * parentMenu);
   //  virtual void createZOrderWireSubmenu(QMenu * parentMenu);
@@ -776,6 +779,9 @@ protected:
     QAction *m_openInPartsEditorNewAct;
     QMenu *m_addToBinMenu;
 
+    QMenu *m_changeItemMenu;
+    QAction *m_changeToRegistor;
+    QAction *m_customItem;
 
 	QMenu *m_rotateMenu;
 	QAction *m_rotate90cwAct;

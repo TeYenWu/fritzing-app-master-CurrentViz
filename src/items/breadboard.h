@@ -30,7 +30,7 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 #include "paletteitem.h"
 #include "current.h"
 #include "../mainwindow/settingsdialog.h"
-#include "../src/sketch/sketchwidget.h"
+#include "../sketch/sketchwidget.h"
 #include <QPainter>
 #include <QtCore/QList>
 class Breadboard : public PaletteItem 

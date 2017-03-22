@@ -248,7 +248,6 @@ protected:
     long m_itemID;
     double m_degrees;
 };
-
 /////////////////////////////////////////////
 
 class FlipItemCommand : public BaseCommand

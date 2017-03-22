@@ -1004,6 +1004,7 @@ void HtmlInfoView::makeLocationFrame() {
 	locationLayout->setContentsMargins(0, 0, 0, 0);
     m_locationFrame->setObjectName("propValueFrame");
 
+    locationLayout->addWidget(m_xEdit);
 	m_xEdit = new QDoubleSpinBox;
     m_xEdit->setDecimals(3);
     m_xEdit->setRange(-99999.999, 99999.999);

@@ -442,7 +442,6 @@ QString RotateItemCommand::getParamString() const {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 FlipItemCommand::FlipItemCommand(SketchWidget* sketchWidget, long itemID, Qt::Orientations orientation, QUndoCommand *parent)
     : BaseCommand(BaseCommand::SingleView, sketchWidget, parent)
 {
@@ -470,7 +469,6 @@ QString FlipItemCommand::getParamString() const {
 		.arg(m_itemID)
 		.arg(m_orientation);
 }
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ChangeConnectionCommand::ChangeConnectionCommand(SketchWidget * sketchWidget, BaseCommand::CrossViewType crossView,

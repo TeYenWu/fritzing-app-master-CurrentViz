@@ -106,6 +106,7 @@ static BezierDisplay * TheBezierDisplay = NULL;
 bool alphaLessThan(QColor * c1, QColor * c2)
 {
 	return c1->alpha() < c2->alpha();
+
 }
 
 void debugCompare(ItemBase * it) {
@@ -1166,7 +1167,7 @@ bool Wire::getNormal() {
 }
 
 void Wire::setColor(const QColor & color, double op) {
-	m_pen.setBrush(QBrush(color));
+    m_pen.setBrush(QBrush(color));
 	m_opacity = op;
 	m_colorName = color.name();
 	this->update();
@@ -1222,7 +1223,7 @@ void Wire::setColorString(QString colorName, double op, bool restore) {
 	}
 
 	QColor c;
-	c.setNamedColor(colorString);
+    c.setNamedColor(colorString);
 	setColor(c, op);
 	m_colorName = colorName;
 

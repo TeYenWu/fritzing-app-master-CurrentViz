@@ -42,6 +42,7 @@ Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const V
     connect(thread, &CurrentVizThread::readyRead, this, &Breadboard::readData, Qt::BlockingQueuedConnection);
 }
 
+
 Breadboard::~Breadboard() {
     // destructor currentItem
     for(int col_index = 0 ; col_index < 24 ; col_index ++){
@@ -73,14 +74,14 @@ void Breadboard::addedToScene(bool temporary)
     foreach (QVector<Current*> currents, m_currentList) {
         foreach (Current* current, currents) {
             this->scene()->addItem(current);
-            current->setZValue(3); // move currentItem to top of scene
+//            current->setZValue(3); // move currentItem to top of scene
          }
      }
     foreach (QVector<Current*> b_currents, b_currentList) {
         foreach (Current* b_current, b_currents) {
             this->scene()->addItem(b_current);
-            b_current->setZValue(3); // move currentItem to top of scene
-         }
+//            b_current->setZValue(3); // move currentItem to top of scene
+        }
      }
 }
 
@@ -95,19 +96,30 @@ bool Breadboard::rotation45Allowed() {
 
 void Breadboard::hoverUpdate()
 {
+
 }
 
 void Breadboard::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
     PaletteItem::hoverEnterEvent(event);
-    for(int i = 0; i < 24; i++){
-        for(int j = 0; j < 10; j++){
-            if(j == 4 || j == 9){
-                continue;
-            }
-//            if(i == 3 && j < 4)
-            m_currentList[i][j]->start();
-        }
-    }
+//    for(int i = 0; i < 24; i++){
+//        for(int j = 0; j < 10; j++){
+//            if(j == 4 || j == 9){
+//                continue;
+//            }
+//            if(i == 7 || i == 11 || i == 15){
+//                m_currentList[i][j]->start();
+//                if(i == 7)
+//                     m_currentList[i][j]->setCurrentValue(0);
+//                else if(i == 11){
+//                     m_currentList[i][j]->setCurrentValue(9.5);
+//                }
+//                else{
+//                     m_currentList[i][j]->setCurrentValue(10.8);
+//                }
+//            }
+
+//        }
+//    }
 //    QTimer *timer = new QTimer(this);
 //    connect(timer, SIGNAL(timeout()), this, SLOT(test()));
 //    timer->start(1000);
@@ -213,17 +225,16 @@ void Breadboard::readData(CurrentValue *current){
 bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers, LayerAttributes & layerAttributes)
 {
     bool flag = PaletteItem::setUpImage(modelPart, viewLayers, layerAttributes);
-
-//    for(int col_index = 0 ; col_index < m_currentList.size() ;col_index ++){
-//        m_currentList[col_index].remove(0,m_currentList[col_index].size());
+//    for(int col_index = 0 ; col_index < m_currentList.size() ; col_index ++){
+//        for(int row_index = 0 ; row_index < 10 ; row_index ++){
+//            delete m_currentList[col_index][row_index];
+//        }
 //    }
-//    m_currentList.remove(0,m_currentList.size());
-    for(int col_index = 0 ; col_index < m_currentList.size() ; col_index ++){
-        for(int row_index = 0 ; row_index < 8 ; row_index ++){
-            delete m_currentList[col_index][row_index];
-        }
-    }
-
+//    for(int col_index = 0 ; col_index < m_currentList.size() ; col_index ++){
+//        for(int row_index = 0 ; row_index < 10 ; row_index ++){
+//            delete b_currentList[col_index][row_index];
+//        }
+//    }
     items = cachedConnectorItems();
     qSort(items.begin(),items.end(), Breadboard::connectItemComparsion);
     // initial _currentList to 24*8 array
@@ -238,52 +249,52 @@ bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers,
     int count = 0;
     int rowIndex = 0;
     int pinIndex = 1;
-    for(int j = 0 ; j < items.size() ; j++){
-        ConnectorItem *item1 = items.at(j);
-        if (item1->boundingRect().center().y() > 150 || item1->boundingRect().center().y() < 40){
-            continue;
-        }
-        if (pinIndex >= 5) // fifth node
-        {
-            pinIndex = 1;
-        }
-        if  (count >= m_currentList[rowIndex].size()){
-            count = 0;
-            rowIndex++;
-            if(rowIndex >= nRowOfCurrent)
-                break;
-        }
+//    for(int j = 0 ; j < items.size() ; j++){
+//        ConnectorItem *item1 = items.at(j);
+//        if (item1->boundingRect().center().y() > 150 || item1->boundingRect().center().y() < 40){
+//            continue;
+//        }
+//        if (pinIndex >= 5) // fifth node
+//        {
+//            pinIndex = 1;
+//        }
+//        if  (count >= m_currentList[rowIndex].size()){
+//            count = 0;
+//            rowIndex++;
+//            if(rowIndex >= nRowOfCurrent)
+//                break;
+//        }
 
-        ConnectorItem *item2 = items.at(j+1);
-        m_currentList[rowIndex][count] = new Current(item1, item2, true);
-        count++;
-        pinIndex++;
-    }
+//        ConnectorItem *item2 = items.at(j+1);
+//        m_currentList[rowIndex][count] = new Current(item1, item2, true);
+//        count++;
+//        pinIndex++;
+//    }
     count = 0;
     pinIndex = 1;
     rowIndex = 0;
-    for(int j = 0 ; j < items.size() ; j++){
-        ConnectorItem *item1 = items.at(j);
-        if (item1->boundingRect().center().y() > 170 || item1->boundingRect().center().y() < 25){
-            continue;
-        }
-        if (pinIndex >= 5) // fifth node
-        {
-            pinIndex = 1;
-        }
-        if  (count >= b_currentList[rowIndex].size()){
-            count = 0;
-            rowIndex++;
-            if(rowIndex >= nRowOfCurrent)
-                break;
-        }
+//    for(int j = 0 ; j < items.size() ; j++){
+//        ConnectorItem *item1 = items.at(j);
+//        if (item1->boundingRect().center().y() > 170 || item1->boundingRect().center().y() < 25){
+//            continue;
+//        }
+//        if (pinIndex >= 5) // fifth node
+//        {
+//            pinIndex = 1;
+//        }
+//        if  (count >= b_currentList[rowIndex].size()){
+//            count = 0;
+//            rowIndex++;
+//            if(rowIndex >= nRowOfCurrent)
+//                break;
+//        }
 
-        ConnectorItem *item2 = items.at(j+1);
-//        m_currentList[rowIndex][count] = new Current(item1, item2, true);
-        b_currentList[rowIndex][count] = new Current(item1, item2, false);
-        count++;
-        pinIndex++;
-    }
+//        ConnectorItem *item2 = items.at(j+1);
+////        m_currentList[rowIndex][count] = new Current(item1, item2, true);
+//        b_currentList[rowIndex][count] = new Current(item1, item2, false);
+//        count++;
+//        pinIndex++;
+//    }
 
     return flag;
 }

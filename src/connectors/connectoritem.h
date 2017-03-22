@@ -57,7 +57,7 @@ Q_OBJECT
 public:
 	ConnectorItem(Connector *, ItemBase* attachedTo);
 	~ConnectorItem();
-
+    bool m_rubberBandLeg;
 	Connector * connector();
 	void connectorHover(class ItemBase *, bool hovering);
 	bool connectorHovering();
@@ -216,7 +216,7 @@ protected:
 	bool m_hoverEnterSpaceBarWasPressed;
 	bool m_hybrid;
 	bool m_bigDot;
-	bool m_rubberBandLeg;
+
 	QPolygonF m_oldPolygon;
 	bool m_draggingLeg;
 	bool m_draggingCurve;

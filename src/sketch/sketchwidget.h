@@ -153,6 +153,8 @@ public:
 	void bringToFront();
     void alignItems(Qt::Alignment);
 	double fitInWindow();
+    void changeItem(Wire *);
+    void customItem(Wire *);
 	void rotateX(double degrees, bool rubberBandLegEnabled, ItemBase * originatingItem);
 	void flipX(Qt::Orientations orientation, bool rubberBandLegEnabled);
 	void addBendpoint(ItemBase * lastHoverEnterItem, ConnectorItem * lastHoverEnterConnectorItem, QPointF lastLocation);

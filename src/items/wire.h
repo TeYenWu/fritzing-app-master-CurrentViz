@@ -220,7 +220,7 @@ protected:
     ViewLayer::ViewID useViewIDForPixmap(ViewLayer::ViewID, bool swappingEnabled);
 
 protected:
-	QLineF	m_line;
+    QLineF	m_line;
 	QPen	m_pen;		
 	QPointF m_wireDragOrigin;
 	bool m_dragEnd;

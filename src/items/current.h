@@ -9,6 +9,7 @@
 #include <QtCore/qeasingcurve.h>
 #include <QtCore/qobject.h>
 #include "../debugdialog.h"
+#include "../model/modelpart.h"
 
 class Current : public QObject, public QGraphicsItem
 {
@@ -34,14 +35,14 @@ public slots:
     void test();
 protected:
     QColor currentColor;
-    bool testing = true;
+    bool testing = false;
     int m_state = 0;
     QTimer * m_timerBlink;
     bool m_inactive;
     bool m_spaceBarWasPressed;
     bool m_hoverEnterSpaceBarWasPressed;
     bool m_main;
-    int currentValue = 1;
+    float currentValue = 1;
     QPainter *m_painter;
     const QStyleOptionGraphicsItem *m_option;
     QWidget *m_widget;
