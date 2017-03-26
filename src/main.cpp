@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 			else {
 				result = app->startup();
 				if (result == 0) {
-                    result = app->exec();
+                      result = app->exec();
 				}
 			}
 			app->finish();

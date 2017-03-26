@@ -971,17 +971,23 @@ void MainWindow::createPartMenuActions() {
 	connect(m_testConnectorsAction, SIGNAL(triggered()), this, SLOT(testConnectors()));
 
 #endif
+    m_changeToRegistor = new QAction(tr("Change item to LED"), this);
+    m_changeToRegistor->setStatusTip(tr("Change item to LED"));
+    connect(m_changeToRegistor, SIGNAL(triggered()), this, SLOT(changeItem()));
 
+    m_customItem = new QAction(tr("Custom Item"), this);
+    m_customItem->setStatusTip(tr("Custom Item"));
+    connect(m_customItem, SIGNAL(triggered()), this, SLOT(customItem()));
 
-	m_rotate45cwAct = new QAction(tr("Rotate 45° Clockwise"), this);
-	m_rotate45cwAct->setStatusTip(tr("Rotate current selection 45 degrees clockwise"));
+    m_rotate45cwAct = new QAction(tr("Rotate 45° Clockwise"), this);
+    m_rotate45cwAct->setStatusTip(tr("Rotate current selection 45 degrees clockwise"));
 	connect(m_rotate45cwAct, SIGNAL(triggered()), this, SLOT(rotate45cw()));
 
 	m_rotate90cwAct = new QAction(tr("Rotate 90° Clockwise"), this);
 	m_rotate90cwAct->setStatusTip(tr("Rotate the selected parts by 90 degrees clockwise"));
 	connect(m_rotate90cwAct, SIGNAL(triggered()), this, SLOT(rotate90cw()));
 
-	m_rotate180Act = new QAction(tr("Rotate 180°"), this);
+    m_rotate180Act = new QAction(tr("Rotate 180°"), this);
 	m_rotate180Act->setStatusTip(tr("Rotate the selected parts by 180 degrees"));
 	connect(m_rotate180Act, SIGNAL(triggered()), this, SLOT(rotate180()));
 
@@ -1321,6 +1327,12 @@ void MainWindow::createMenus()
     createHelpMenu();
 }
 
+void MainWindow::createChangeItemmenu(QMenu * parentMenu){
+    QMenu *changeItemMenu = parentMenu->addMenu(tr("Change Item"));
+    changeItemMenu->addAction(m_changeToRegistor);
+    changeItemMenu->addAction(m_customItem);
+}
+
 void MainWindow::createRotateSubmenu(QMenu * parentMenu) {
     QMenu *rotateMenu = parentMenu->addMenu(tr("Rotate"));
     rotateMenu->addAction(m_rotate45cwAct);
@@ -1469,6 +1481,7 @@ void MainWindow::createPartMenu() {
 	m_partMenu->addSeparator();
 	m_partMenu->addAction(m_flipHorizontalAct);
     m_partMenu->addAction(m_flipVerticalAct);
+    createChangeItemmenu(m_partMenu);
     createRotateSubmenu(m_partMenu);
     createZOrderSubmenu(m_partMenu);
     //createZOrderWireSubmenu(m_partMenu);
@@ -1866,6 +1879,9 @@ void MainWindow::updatePartMenu() {
     m_alignVerticalCenterAct->setEnabled(itemCount.selCount - itemCount.wireCount > 1);
     m_alignHorizontalCenterAct->setEnabled(itemCount.selCount - itemCount.wireCount > 1);
 
+    m_changeToRegistor->setEnabled(enable);
+    m_customItem->setEnabled(enable);
+
 	//DebugDialog::debug(QString("enable layer actions %1")upat.arg(enable));
 	m_bringToFrontAct->setEnabled(zenable);
 	m_bringForwardAct->setEnabled(zenable);
@@ -1973,13 +1989,15 @@ void MainWindow::updateTransformationActions() {
 
 	if (m_currentGraphicsView == NULL) return;
     if (m_rotate90cwAct == NULL) return;
-
+    if (m_changeToRegistor == NULL) return;
+    if (m_customItem == NULL) return;
 	ItemCount itemCount = m_currentGraphicsView->calcItemCount();
 	bool enable = (itemCount.selRotatable > 0);
     bool renable = (itemCount.sel45Rotatable > 0);
 
 	//DebugDialog::debug(QString("enable rotate (1) %1").arg(enable));
-
+    m_changeToRegistor->setEnabled(enable);
+    m_customItem->setEnabled(enable);
 	m_rotate90cwAct->setEnabled(enable);
 	m_rotate180Act->setEnabled(enable);
 	m_rotate90ccwAct->setEnabled(enable);
@@ -2517,6 +2535,17 @@ void MainWindow::rotateIncCCWRubberBand() {
 	else if (m_rotate90ccwAct->isEnabled()) {
 		m_currentGraphicsView->rotateX(270, true, NULL);
 	}
+}
+void MainWindow::changeItem(){
+    if (m_currentGraphicsView == NULL) return;
+
+    m_currentGraphicsView->changeItem(retrieveWire());
+}
+
+void MainWindow::customItem(){
+    if (m_currentGraphicsView == NULL) return;
+
+    m_currentGraphicsView->customItem(retrieveWire());
 }
 
 void MainWindow::rotate90cw() {
@@ -3376,6 +3405,7 @@ bool MainWindow::isGroundFill(ItemBase * itemBase) {
 QMenu *MainWindow::breadboardItemMenu() {
 	QMenu *menu = new QMenu(QObject::tr("Part"), this);
     createRotateSubmenu(menu);
+    createChangeItemmenu(menu);
 	return viewItemMenuAux(menu);
 }
 

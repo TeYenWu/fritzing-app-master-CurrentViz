@@ -80,7 +80,7 @@ later:
 #include "../utils/cursormaster.h"
 #include "../utils/ratsnestcolors.h"
 #include "../layerattributes.h"
-
+#include <QPropertyAnimation>
 #include <stdlib.h>
 
 QVector<qreal> Wire::TheDash;
@@ -106,6 +106,7 @@ static BezierDisplay * TheBezierDisplay = NULL;
 bool alphaLessThan(QColor * c1, QColor * c2)
 {
 	return c1->alpha() < c2->alpha();
+
 }
 
 void debugCompare(ItemBase * it) {
@@ -310,6 +311,7 @@ void Wire::paintBody(QPainter * painter, const QStyleOptionGraphicsItem * option
 			painter->drawPath(painterPath);
 		}
 		painter->restore();
+
 	}
 	   
 	// DebugDialog::debug(QString("pen width %1 %2").arg(m_pen.widthF()).arg(m_viewID));
@@ -848,6 +850,15 @@ void Wire::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 	CursorMaster::instance()->addCursor(this, cursor());
 	//DebugDialog::debug("---wire set override cursor");
 	updateCursor(event->modifiers());
+//    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
+//    QPointF p1 = QPointF(this->connector0()->attachedTo()->boundingRect().center().x(),this->connector0()->attachedTo()->boundingRect().top());
+//    QPointF p2 = QPointF(this->connector0()->attachedTo()->boundingRect().center().x(),this->connector0()->attachedTo()->boundingRect().bottom());
+//    animation->setDuration(10000);
+//    animation->setStartValue(QRect(p1.x(), p1.y(), this->boundingRect().width(), this->boundingRect().height()));
+//    animation->setEndValue(QRect(p2.x(), p2.y(),  this->boundingRect().width(), this->boundingRect().height()));
+//    animation->start();
+//    this->update();
+//    DebugDialog::debug(QString("wire enter"));
 }
 
 void Wire::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
@@ -1156,7 +1167,7 @@ bool Wire::getNormal() {
 }
 
 void Wire::setColor(const QColor & color, double op) {
-	m_pen.setBrush(QBrush(color));
+    m_pen.setBrush(QBrush(color));
 	m_opacity = op;
 	m_colorName = color.name();
 	this->update();
@@ -1212,7 +1223,7 @@ void Wire::setColorString(QString colorName, double op, bool restore) {
 	}
 
 	QColor c;
-	c.setNamedColor(colorString);
+    c.setNamedColor(colorString);
 	setColor(c, op);
 	m_colorName = colorName;
 

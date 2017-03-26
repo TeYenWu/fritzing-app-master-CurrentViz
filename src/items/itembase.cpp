@@ -2063,8 +2063,19 @@ QRectF ItemBase::boundingRectWithoutLegs() const
 	return boundingRect();
 }
 
+QRectF ItemBase::currentUsedBoundingRect(QPointF position) const
+{
+    FSvgRenderer * frenderer = fsvgRenderer();
+    if (frenderer == NULL) {
+        return QGraphicsSvgItem::boundingRect();
+    }
+    QSizeF s = frenderer->defaultSizeF();
+    QRectF r(position.x(),position.y()-s.height()*0.75, s.width(), s.height());
+    return r;
+}
+
 QRectF ItemBase::boundingRect() const
-{    
+{
 	FSvgRenderer * frenderer = fsvgRenderer();
 	if (frenderer == NULL) {
 		return QGraphicsSvgItem::boundingRect();

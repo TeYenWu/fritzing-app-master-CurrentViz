@@ -46,7 +46,7 @@ $Date: 2013-04-29 07:24:08 +0200 (Mon, 29 Apr 2013) $
 #include <QClipboard>
 #include <QScrollBar>
 #include <QStatusBar>
-
+#include <QInputDialog>
 #include <limits>
 
 #include "../items/partfactory.h"
@@ -54,6 +54,7 @@ $Date: 2013-04-29 07:24:08 +0200 (Mon, 29 Apr 2013) $
 #include "../items/logoitem.h"
 #include "../items/pad.h"
 #include "../items/ruler.h"
+#include "../items/led.h"
 #include "../items/symbolpaletteitem.h"
 #include "../items/wire.h"
 #include "../commands.h"
@@ -244,6 +245,7 @@ SketchWidget::SketchWidget(ViewLayer::ViewID viewID, QWidget *parent, int size, 
     m_infoViewOnHover = true;
 
 	setMouseTracking(true);
+
 
 }
 
@@ -657,10 +659,11 @@ void SketchWidget::handleConnect(QDomElement & connect, ModelPart * mp, const QS
 	QString already = ((mp->modelIndex() <= modelIndex) ? QString("%1.%2.%3.%4.%5.%6") : QString("%4.%5.%6.%1.%2.%3"))
 						.arg(mp->modelIndex()).arg(fromConnectorID).arg(fromViewLayerID)
 						.arg(modelIndex).arg(toConnectorID).arg(toViewLayerID);
-	if (alreadyConnected.contains(already)) return;
-
+    if (alreadyConnected.contains(already)){
+        return;
+    }
+    DebugDialog::debug(already);
 	alreadyConnected.append(already);
-
 	if (parentCommand == NULL) {
 		ItemBase * fromBase = newItems.value(mp->modelIndex(), NULL);
 		ItemBase * toBase = newItems.value(modelIndex, NULL);
@@ -724,26 +727,26 @@ void SketchWidget::setWireExtras(long newID, QDomElement & extras)
 
 	wire->setExtras(extras, this);
 }
-
 ItemBase * SketchWidget::addItem(const QString & moduleID, ViewLayer::ViewLayerPlacement viewLayerPlacement, BaseCommand::CrossViewType crossViewType, const ViewGeometry & viewGeometry, long id, long modelIndex,  AddDeleteItemCommand * originatingCommand) {
 	if (m_referenceModel == NULL) return NULL;
-
 	ItemBase * itemBase = NULL;
-	ModelPart * modelPart = m_referenceModel->retrieveModelPart(moduleID);
-
+//    ItemBase * myItem = NULL;
+    ModelPart * modelPart = m_referenceModel->retrieveModelPart(moduleID);
+//    ModelPart * myPart = m_referenceModel->retrieveModelPart(QString("5mmColorLEDModuleID"));
+    DebugDialog::debug(moduleID+" ......... s");
 	if (modelPart != NULL) {
         if (!m_blockUI) {
 		    QApplication::setOverrideCursor(Qt::WaitCursor);
 		    statusMessage(tr("loading part"));
         }
-		itemBase = addItem(modelPart, viewLayerPlacement, crossViewType, viewGeometry, id, modelIndex, originatingCommand);
+        itemBase = addItem(modelPart, viewLayerPlacement, crossViewType, viewGeometry, id, modelIndex, originatingCommand);
         if (!m_blockUI) {
 		    statusMessage(tr("done loading"), 2000);
 		    QApplication::restoreOverrideCursor();
         }
 	}
 
-	return itemBase;
+    return itemBase;
 }
 
 
@@ -773,7 +776,6 @@ ItemBase * SketchWidget::addItem(ModelPart * modelPart, ViewLayer::ViewLayerPlac
 	
 		newItem = addItemAux(modelPart, viewLayerPlacement, viewGeometry, id, true, m_viewID, false);
 	}
-
 	if (crossViewType == BaseCommand::CrossView) {
 		//DebugDialog::debug(QString("emit item added"));
 		emit itemAddedSignal(modelPart, newItem, viewLayerPlacement, viewGeometry, id, originatingCommand ? originatingCommand->dropOrigin() : NULL);
@@ -801,7 +803,7 @@ ItemBase * SketchWidget::addItemAux(ModelPart * modelPart, ViewLayer::ViewLayerP
 		modelPart->initConnectors();    // is a no-op if connectors already in place
 	}
 
-	ItemBase * newItem = PartFactory::createPart(modelPart, viewLayerPlacement, viewID, viewGeometry, id, m_itemMenu, m_wireMenu, true);
+    ItemBase * newItem = PartFactory::createPart(modelPart, viewLayerPlacement, viewID, viewGeometry, id, m_itemMenu, m_wireMenu, true);
 	Wire * wire = qobject_cast<Wire *>(newItem);
 	if (wire) {
 
@@ -844,8 +846,9 @@ ItemBase * SketchWidget::addItemAux(ModelPart * modelPart, ViewLayer::ViewLayerP
 	addPartItem(modelPart, viewLayerPlacement, (PaletteItem *) newItem, doConnectors, ok, viewID, temporary);
     newItem->debugInfo("add part");
 	setNewPartVisible(newItem);
-	newItem->updateConnectors();
+    newItem->updateConnectors();
 	return newItem;
+
 }
 
 
@@ -1450,7 +1453,7 @@ void SketchWidget::updateWire(long id, const QString & connectorID, bool updateR
 }
 
 void SketchWidget::rotateItem(long id, double degrees) {
-	//DebugDialog::debug(QString("rotating %1 %2").arg(id).arg(degrees) );
+//    DebugDialog::debug(QString("rotating %1 %2").arg(id).arg(degrees) );
 
 	if (!isVisible()) return;
 
@@ -4587,6 +4590,112 @@ void SketchWidget::mousePressConnectorEvent(ConnectorItem * connectorItem, QGrap
 	}
 }
 
+void SketchWidget::changeItem(Wire * wire){
+    ItemBase *changeItem = NULL;
+    foreach (QGraphicsItem * item, scene()->selectedItems()) {
+        ItemBase * itemBase = dynamic_cast<ItemBase *>(item);
+        if (itemBase == NULL) continue;
+        if (itemBase->moveLock()) continue;
+
+        changeItem = itemBase;
+
+        if (itemBase->moveLock()) continue;
+    }
+    if(changeItem == NULL) return;
+    QUndoCommand* parentCommand = new QUndoCommand(tr("Add %1 parts").arg(0));
+    stackSelectionState(false, parentCommand);
+    QString newModuleID = QString("5mmColorLEDModuleID");
+    qint64 newID = ItemBase::getNextID();
+    long newModuleIndex = ModelPart::nextIndex();
+    ViewGeometry vg = changeItem->getViewGeometry();
+
+    newAddItemCommand(BaseCommand::CrossView, NULL, newModuleID, changeItem->viewLayerPlacement(), vg, newID, true, newModuleIndex, true, parentCommand);
+
+//    CheckStickyCommand* checkStickyCommand = new CheckStickyCommand(this, BaseCommand::CrossView, newID, false, CheckStickyCommand::RedoOnly, parentCommand);
+
+    ViewGeometry vg1 = changeItem->getViewGeometry();
+    ViewGeometry vg2(vg1);
+    vg2.setLoc(vg1.loc() + QPointF(-3,-53));
+    new MoveItemCommand(this, newID, vg1, vg2, true, parentCommand);
+
+    ConnectorItem* item1 = changeItem->findConnectorItemWithSharedID("connector0")->connectedToItems().at(0);
+    new MoveLegBendpointCommand(this, newID, "connector0", 1, item1->mapToScene(item1->boundingRect().center()), item1->mapToScene(item1->boundingRect().center()), parentCommand);
+    new ChangeConnectionCommand(this, BaseCommand::CrossView, newID, "connector0", item1->attachedToID(), item1->connectorSharedID(), changeItem->viewLayerPlacement(), true, parentCommand);
+
+    ConnectorItem* item2 = changeItem->findConnectorItemWithSharedID("connector1")->connectedToItems().at(0);
+    new MoveLegBendpointCommand(this, newID, "connector1", 1, item2->mapToScene(item2->boundingRect().center()), item2->mapToScene(item2->boundingRect().center()), parentCommand);
+    new ChangeConnectionCommand(this, BaseCommand::CrossView, newID, "connector1", item2->attachedToID(), item2->connectorSharedID(), changeItem->viewLayerPlacement(), true, parentCommand);
+
+
+
+    m_undoStack->waitPush(parentCommand, PropChangeDelay);
+
+    if(newModuleID == QString("5mmColorLEDModuleID")){
+//        LED* led = qobject_cast<LED *>(item);
+//        QList<ConnectorItem *> originalConnectorItems = changeItem->cachedConnectorItemsConst();
+//        QList<ConnectorItem *> changedConnectorItems = item->cachedConnectorItems();
+
+//        for(int i = 0; i< changedConnectorItems.size(); i++)
+//        {
+//            ConnectorItem *connectorItem = originalConnectorItems.at(i)->connectedToItems().at(0);
+//            ConnectorItem *changedConnectorItem = changedConnectorItems.at(i);
+//            connectorItem->setRubberBandLeg();
+//            connectorItem->m_rubberBandLeg = true;
+//            QPolygonF *polygon = new QPolygonF();
+//            polygon->append(connectorItem->boundingRect().center());
+//            changedConnectorItem->setLeg(*polygon, false, "");
+//            prepLegBendpointMove(connectorItem, connectorItem->leg().size()-1, connectorItem->adjustedTerminalPoint(), connectorItem->adjustedTerminalPoint(), connectorItem, true);
+//        }
+    }
+    deleteSelected(wire,false);
+
+}
+void SketchWidget::customItem(Wire * wire){
+    ItemBase *changeItem = NULL;
+    foreach (QGraphicsItem * item, scene()->selectedItems()) {
+        ItemBase * itemBase = dynamic_cast<ItemBase *>(item);
+        if (itemBase == NULL) continue;
+        if (itemBase->moveLock()) continue;
+
+        changeItem = itemBase;
+
+        if (itemBase->moveLock()) continue;
+    }
+    if(changeItem == NULL) return;
+    QUndoCommand* parentCommand = new QUndoCommand(tr("Add %1 parts").arg(0));
+    stackSelectionState(false, parentCommand);
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("8 pin component"),
+                                           tr("Component name:"), QLineEdit::Normal,
+                                           QDir::home().dirName(), &ok);
+    QString newModuleID = text;
+    qint64 newID = ItemBase::getNextID();
+    long newModuleIndex = ModelPart::nextIndex();
+    ViewGeometry vg = changeItem->getViewGeometry();
+
+    newAddItemCommand(BaseCommand::CrossView, NULL, newModuleID, changeItem->viewLayerPlacement(), vg, newID, true, newModuleIndex, true, parentCommand);
+
+//    CheckStickyCommand* checkStickyCommand = new CheckStickyCommand(this, BaseCommand::CrossView, newID, false, CheckStickyCommand::RedoOnly, parentCommand);
+
+    ViewGeometry vg1 = changeItem->getViewGeometry();
+    ViewGeometry vg2(vg1);
+    vg2.setLoc(vg1.loc());
+//    new MoveItemCommand(this, newID, vg1, vg2, true, parentCommand);
+
+//    ConnectorItem* item1 = changeItem->findConnectorItemWithSharedID("connector0")->connectedToItems().at(0);
+//    new MoveLegBendpointCommand(this, newID, "connector0", 1, item1->mapToScene(item1->boundingRect().center()), item1->mapToScene(item1->boundingRect().center()), parentCommand);
+//    new ChangeConnectionCommand(this, BaseCommand::CrossView, newID, "connector0", item1->attachedToID(), item1->connectorSharedID(), changeItem->viewLayerPlacement(), true, parentCommand);
+
+//    ConnectorItem* item2 = changeItem->findConnectorItemWithSharedID("connector1")->connectedToItems().at(0);
+//    new MoveLegBendpointCommand(this, newID, "connector1", 1, item2->mapToScene(item2->boundingRect().center()), item2->mapToScene(item2->boundingRect().center()), parentCommand);
+//    new ChangeConnectionCommand(this, BaseCommand::CrossView, newID, "connector1", item2->attachedToID(), item2->connectorSharedID(), changeItem->viewLayerPlacement(), true, parentCommand);
+
+
+
+    m_undoStack->waitPush(parentCommand, PropChangeDelay);
+    deleteSelected(wire,false);
+}
+
 void SketchWidget::rotateX(double degrees, bool rubberBandLegEnabled, ItemBase * originatingItem) 
 {
     if (qAbs(degrees) < 0.01) return;
@@ -5025,7 +5134,7 @@ void SketchWidget::changeConnectionAux(long fromID, const QString & fromConnecto
 				.arg(fromID).arg(fromConnectorID)
 				.arg(toID).arg(toConnectorID)
 				.arg(connect).arg(m_viewID) );
-
+    m_connected = connect;
 	ItemBase * fromItem = findItem(fromID);
 	if (fromItem == NULL) {
 		DebugDialog::debug(QString("change connection exit 1 %1").arg(fromID));
@@ -5727,7 +5836,7 @@ void SketchWidget::wireJoinSlot(Wire* wire, ConnectorItem * clickedConnectorItem
 		b0.copy(toWire->curve());
 		b1.copy(wire->curve());
 		b0.set_endpoints(toWire->line().p1(), toWire->line().p2());
-		b1.set_endpoints(wire->line().p1(), wire->line().p2());
+        b1.set_endpoints(wire->line().p1(), wire->line().p2());
 		b1.translate(wire->pos() - toWire->pos());
 	}
 	new ChangeWireCommand(this, wire->id(), wire->line(), newLine, wire->pos(), newPos, true, false, parentCommand);

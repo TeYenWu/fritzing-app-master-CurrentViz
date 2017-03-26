@@ -114,6 +114,7 @@ public:
 
 	void pushCommand(QUndoCommand *, QObject * signalTarget);
     class WaitPushUndoStack * undoStack();
+    ItemBase * tryToAddItem();
     ItemBase * addItem(ModelPart *, ViewLayer::ViewLayerPlacement, BaseCommand::CrossViewType, const ViewGeometry &, long id, long modelIndex, AddDeleteItemCommand * originatingCommand);
 	ItemBase * addItem(const QString & moduleID, ViewLayer::ViewLayerPlacement, BaseCommand::CrossViewType, const ViewGeometry &, long id, long modelIndex, AddDeleteItemCommand * originatingCommand);
     void deleteItem(long id, bool deleteModelPart, bool doEmit, bool later);
@@ -152,6 +153,8 @@ public:
 	void bringToFront();
     void alignItems(Qt::Alignment);
 	double fitInWindow();
+    void changeItem(Wire *);
+    void customItem(Wire *);
 	void rotateX(double degrees, bool rubberBandLegEnabled, ItemBase * originatingItem);
 	void flipX(Qt::Orientations orientation, bool rubberBandLegEnabled);
 	void addBendpoint(ItemBase * lastHoverEnterItem, ConnectorItem * lastHoverEnterConnectorItem, QPointF lastLocation);
@@ -758,6 +761,7 @@ protected:
     bool m_everZoomed;
     double m_ratsnestOpacity;
     double m_ratsnestWidth;
+    bool m_connected;
 
 public:
 	static ViewLayer::ViewLayerID defaultConnectorLayer(ViewLayer::ViewID viewId);

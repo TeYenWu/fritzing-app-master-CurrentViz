@@ -126,29 +126,28 @@ void CurrentVizThread::run()
             }
         }
 
-        const char str[] = {0x11, m_row, m_pin, 0x23};
+//        const char str[] = {0x11, m_row, m_pin, 0x23};
 
-        bool succces = serialPort->write(str, 4);
-        if(!succces || !serialPort->waitForBytesWritten(waitTimeForWritten)){
-            emit onError(serialPort->errorString());
-            continue;
-        }
-        qDebug() << "written";
+//        bool succces = serialPort->write(str, 4);
+//        if(!succces || !serialPort->waitForBytesWritten(waitTimeForWritten)){
+//            emit onError(serialPort->errorString());
+//            continue;
+//        }
+//        qDebug() << "written";
 
-        readData(serialPort);
+//        readData(serialPort);
 
-        if (m_row < 24 - 1)
-            m_row ++;
-        else
-            m_row = 0;
+//        if (m_row < 24 - 1)
+//            m_row ++;
+//        else
+//            m_row = 0;
 
-        if (m_pin < 10 - 1)
-            m_pin ++;
-        else
-            m_pin = 0;
+//        if (m_pin < 10 - 1)
+//            m_pin ++;
+//        else
+//            m_pin = 0;
     }
-    qDebug()<<"Thread::Quit";
+//    qDebug()<<"Thread::Quit";
 }
-
 
 

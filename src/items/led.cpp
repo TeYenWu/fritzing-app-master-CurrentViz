@@ -171,6 +171,8 @@ bool LED::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers, LayerA
 	else if (layerAttributes.viewLayerID == ViewLayer::Icon && IconSvg.value(m_filename).isEmpty() && result) {
 		IconSvg.insert(m_filename, QString(layerAttributes.loaded()));
 	}
+//    ConnectorItem *item = cachedConnectorItems().at(1);
+//    item->moveLegBendpoint(1, mapToScene(item->leg().at(1)+QPointF(50,50)));
 	return result;
 }
 

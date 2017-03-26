@@ -34,7 +34,7 @@
 
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
-
+#include "../items/breadboard.h"
 #include <QtSerialPort/QSerialPortInfo>
 #include <QIntValidator>
 #include <QLineEdit>

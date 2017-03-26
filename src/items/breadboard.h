@@ -29,6 +29,8 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 
 #include "paletteitem.h"
 #include "current.h"
+#include "../mainwindow/settingsdialog.h"
+#include "../sketch/sketchwidget.h"
 #include <QPainter>
 #include <QtCore/QList>
 class Breadboard : public PaletteItem 
@@ -51,11 +53,18 @@ public:
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event );
     void addedToScene(bool temporary);
 	bool canFindConnectorsUnder();
-
+    void setUpBranchCurrent();
+    void test();
+public slots:
+    void readData(CurrentValue *current);
 protected:
     void paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     bool setUpImage(ModelPart* modelPart, const LayerHash & viewLayers, LayerAttributes &);
     QVector< QVector<Current *> > m_currentList;
+    QVector< QVector<Current *> > b_currentList;
+    QList<ConnectorItem *> items;
+    QList<int> connectNum;
+
 //    QList< double > nodeX;
 //    QList< double > nodeY;
 

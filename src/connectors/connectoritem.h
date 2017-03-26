@@ -57,7 +57,7 @@ Q_OBJECT
 public:
 	ConnectorItem(Connector *, ItemBase* attachedTo);
 	~ConnectorItem();
-
+    bool m_rubberBandLeg;
 	Connector * connector();
 	void connectorHover(class ItemBase *, bool hovering);
 	bool connectorHovering();
@@ -153,7 +153,9 @@ public:
 	void updateTooltip();
 	bool isGroundFillSeed();
 	void setGroundFillSeed(bool);
-
+    bool isConnected();
+    void branchCurrentSetColor();
+    void setBranchValue(bool value);
 protected:
 	void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
 	void hoverLeaveEvent( QGraphicsSceneHoverEvent * event );
@@ -182,7 +184,6 @@ protected:
 	void repoly(const QPolygonF & poly, bool relative);
 	QPainterPath shapeAux(double width) const;
     ViewGeometry::WireFlags getSkipFlags();
-
 	enum CursorLocation {
 		InNotFound = 0,
 		InConnector,
@@ -215,7 +216,7 @@ protected:
 	bool m_hoverEnterSpaceBarWasPressed;
 	bool m_hybrid;
 	bool m_bigDot;
-	bool m_rubberBandLeg;
+
 	QPolygonF m_oldPolygon;
 	bool m_draggingLeg;
 	bool m_draggingCurve;
@@ -233,6 +234,8 @@ protected:
 	double m_connectorDetectT;
 	bool m_groundFillSeed;
 	int m_moveCount;
+    bool m_connected = false;
+    int inOrOut = 0;
 	
 protected:	
 	static QList<ConnectorItem *>  m_equalPotentialDisplayItems;
