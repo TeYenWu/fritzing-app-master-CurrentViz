@@ -4590,6 +4590,39 @@ void SketchWidget::mousePressConnectorEvent(ConnectorItem * connectorItem, QGrap
 	}
 }
 
+void SketchWidget::autoDetect(QList<ConnectorItem *> connectorItems, QString & newModuleID, ItemBase * changeItem)
+{
+    QUndoCommand* parentCommand = new QUndoCommand(tr("Add %1 parts").arg(0));
+    stackSelectionState(false, parentCommand);
+    qint64 newID = ItemBase::getNextID();
+    long newModuleIndex = ModelPart::nextIndex();
+    ViewGeometry vg = changeItem->getViewGeometry();
+    newAddItemCommand(BaseCommand::CrossView, NULL, newModuleID, changeItem->viewLayerPlacement(), vg, newID, true, newModuleIndex, true, parentCommand);
+    ViewGeometry vg1 = changeItem->getViewGeometry();
+    ViewGeometry vg2(vg1);
+    switch(connectorItems.size()){
+        case 2:
+            ConnectorItem* item1 = connectorItems.at(0);
+            ConnectorItem* item2 = connectorItems.at(1);
+            QPointF offset1 = item2->mapToScene(item2->boundingRect().center()) - item1->mapToScene(item1->boundingRect().center());
+            QVector2D* vector = new QVector2D(offset1);
+            QPointF newP = (item1->mapToScene(item1->boundingRect().center()) + item2->mapToScene(item2->boundingRect().center())) /2 + QPointF(-20,0) ;
+            vector->normalize();
+            vg2.setLoc(newP);
+            new MoveItemCommand(this, newID, vg1, vg2, true, parentCommand);
+            qreal dot = vector->x();
+            double degree = 180 * qAcos(dot) / 3.14;
+            new RotateItemCommand(this, newID, degree, parentCommand);
+            new MoveLegBendpointCommand(this, newID, "connector0", 1, item1->mapToScene(item1->boundingRect().center()), item1->mapToScene(item1->boundingRect().center()), parentCommand);
+            new ChangeConnectionCommand(this, BaseCommand::CrossView, newID, "connector0", item1->attachedToID(), item1->connectorSharedID(), changeItem->viewLayerPlacement(), true, parentCommand);
+            new MoveLegBendpointCommand(this, newID, "connector1", 1, item2->mapToScene(item2->boundingRect().center()), item2->mapToScene(item2->boundingRect().center()), parentCommand);
+            new ChangeConnectionCommand(this, BaseCommand::CrossView, newID, "connector1", item2->attachedToID(), item2->connectorSharedID(), changeItem->viewLayerPlacement(), true, parentCommand);
+            m_undoStack->waitPush(parentCommand, PropChangeDelay);
+            break;
+    }
+
+}
+
 void SketchWidget::changeItem(Wire * wire){
     ItemBase *changeItem = NULL;
     foreach (QGraphicsItem * item, scene()->selectedItems()) {
@@ -4610,9 +4643,6 @@ void SketchWidget::changeItem(Wire * wire){
     ViewGeometry vg = changeItem->getViewGeometry();
 
     newAddItemCommand(BaseCommand::CrossView, NULL, newModuleID, changeItem->viewLayerPlacement(), vg, newID, true, newModuleIndex, true, parentCommand);
-
-//    CheckStickyCommand* checkStickyCommand = new CheckStickyCommand(this, BaseCommand::CrossView, newID, false, CheckStickyCommand::RedoOnly, parentCommand);
-
     ViewGeometry vg1 = changeItem->getViewGeometry();
     ViewGeometry vg2(vg1);
     vg2.setLoc(vg1.loc() + QPointF(-3,-53));
@@ -4629,24 +4659,6 @@ void SketchWidget::changeItem(Wire * wire){
 
 
     m_undoStack->waitPush(parentCommand, PropChangeDelay);
-
-    if(newModuleID == QString("5mmColorLEDModuleID")){
-//        LED* led = qobject_cast<LED *>(item);
-//        QList<ConnectorItem *> originalConnectorItems = changeItem->cachedConnectorItemsConst();
-//        QList<ConnectorItem *> changedConnectorItems = item->cachedConnectorItems();
-
-//        for(int i = 0; i< changedConnectorItems.size(); i++)
-//        {
-//            ConnectorItem *connectorItem = originalConnectorItems.at(i)->connectedToItems().at(0);
-//            ConnectorItem *changedConnectorItem = changedConnectorItems.at(i);
-//            connectorItem->setRubberBandLeg();
-//            connectorItem->m_rubberBandLeg = true;
-//            QPolygonF *polygon = new QPolygonF();
-//            polygon->append(connectorItem->boundingRect().center());
-//            changedConnectorItem->setLeg(*polygon, false, "");
-//            prepLegBendpointMove(connectorItem, connectorItem->leg().size()-1, connectorItem->adjustedTerminalPoint(), connectorItem->adjustedTerminalPoint(), connectorItem, true);
-//        }
-    }
     deleteSelected(wire,false);
 
 }
@@ -4675,23 +4687,9 @@ void SketchWidget::customItem(Wire * wire){
 
     newAddItemCommand(BaseCommand::CrossView, NULL, newModuleID, changeItem->viewLayerPlacement(), vg, newID, true, newModuleIndex, true, parentCommand);
 
-//    CheckStickyCommand* checkStickyCommand = new CheckStickyCommand(this, BaseCommand::CrossView, newID, false, CheckStickyCommand::RedoOnly, parentCommand);
-
     ViewGeometry vg1 = changeItem->getViewGeometry();
     ViewGeometry vg2(vg1);
     vg2.setLoc(vg1.loc());
-//    new MoveItemCommand(this, newID, vg1, vg2, true, parentCommand);
-
-//    ConnectorItem* item1 = changeItem->findConnectorItemWithSharedID("connector0")->connectedToItems().at(0);
-//    new MoveLegBendpointCommand(this, newID, "connector0", 1, item1->mapToScene(item1->boundingRect().center()), item1->mapToScene(item1->boundingRect().center()), parentCommand);
-//    new ChangeConnectionCommand(this, BaseCommand::CrossView, newID, "connector0", item1->attachedToID(), item1->connectorSharedID(), changeItem->viewLayerPlacement(), true, parentCommand);
-
-//    ConnectorItem* item2 = changeItem->findConnectorItemWithSharedID("connector1")->connectedToItems().at(0);
-//    new MoveLegBendpointCommand(this, newID, "connector1", 1, item2->mapToScene(item2->boundingRect().center()), item2->mapToScene(item2->boundingRect().center()), parentCommand);
-//    new ChangeConnectionCommand(this, BaseCommand::CrossView, newID, "connector1", item2->attachedToID(), item2->connectorSharedID(), changeItem->viewLayerPlacement(), true, parentCommand);
-
-
-
     m_undoStack->waitPush(parentCommand, PropChangeDelay);
     deleteSelected(wire,false);
 }
@@ -9003,7 +9001,7 @@ Wire * SketchWidget::createTempWireForDragging(Wire * fromWire, ModelPart * wire
 	Q_UNUSED(fromWire);
 	if (spec == ViewLayer::UnknownPlacement) {
 		spec = wireViewLayerPlacement(connectorItem);
-	}
+    }
 	return qobject_cast<Wire *>(addItemAuxTemp(wireModel, spec, viewGeometry, ItemBase::getNextID(), true, m_viewID, true));
 }
 

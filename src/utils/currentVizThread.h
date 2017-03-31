@@ -27,6 +27,7 @@ public:
     void run() Q_DECL_OVERRIDE;
     void startCurrentVizThread();
     void readData(QSerialPort* serialPort);
+    bool test = false;
 
 signals:
     void readyRead(CurrentValue*);

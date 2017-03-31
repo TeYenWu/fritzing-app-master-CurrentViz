@@ -112,6 +112,7 @@ public:
     SketchWidget(ViewLayer::ViewID, QWidget *parent=0, int size=400, int minSize=300);
 	~SketchWidget();
 
+    void autoDetect(QList<ConnectorItem *>, QString & moduleID, ItemBase * itemBase);
 	void pushCommand(QUndoCommand *, QObject * signalTarget);
     class WaitPushUndoStack * undoStack();
     ItemBase * tryToAddItem();

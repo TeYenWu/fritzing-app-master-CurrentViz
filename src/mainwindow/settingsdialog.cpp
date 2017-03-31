@@ -250,7 +250,7 @@ void SettingsDialog::updateSettings()
     currentSettings.dataBits = static_cast<QSerialPort::DataBits>(8);
 //    currentSettings.stringDataBits = ui->dataBitsBox->currentText(QString::number(8));
 
-    currentSettings.parity = static_cast<QSerialPort::Parity>(2);
+    currentSettings.parity = static_cast<QSerialPort::Parity>(0);
 //    currentSettings.stringParity = ui->parityBox->currentText();
 
     currentSettings.stopBits = static_cast<QSerialPort::StopBits>(1);

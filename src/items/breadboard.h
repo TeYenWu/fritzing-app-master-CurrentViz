@@ -44,6 +44,7 @@ public:
 
 	PluralType isPlural();
 	void hoverUpdate();
+    SketchWidget* m_sketchWidget;
 	void paintHover(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget); 
 	bool stickyEnabled();
     void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
@@ -57,13 +58,15 @@ public:
     void test();
 public slots:
     void readData(CurrentValue *current);
+    void autoDetection();
 protected:
     void paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     bool setUpImage(ModelPart* modelPart, const LayerHash & viewLayers, LayerAttributes &);
     QVector< QVector<Current *> > m_currentList;
     QVector< QVector<Current *> > b_currentList;
     QList<ConnectorItem *> items;
-    QList<int> connectNum;
+    QList<ConnectorItem *> connectorItems;
+    QTimer * m_timer;
 
 //    QList< double > nodeX;
 //    QList< double > nodeY;
