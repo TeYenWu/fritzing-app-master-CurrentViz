@@ -172,25 +172,25 @@ void MainWindow::print() {
 	#endif
 }
 
-void MainWindow::exportCircuitStack()
-{
-    bool result = FritzingWindow::save();
+//void MainWindow::exportCircuitStack()
+//{
+//    bool result = FritzingWindow::save();
 
 
-    if (result) {
-        QSettings settings;
-        settings.setValue("lastOpenSketch", m_fwFilename);
-        QProcess p;
-        QStringList params;
+//    if (result) {
+//        QSettings settings;
+//        settings.setValue("lastOpenSketch", m_fwFilename);
+//        QProcess p;
+//        QStringList params;
 
-        DebugDialog::debug(fileName());
+//        DebugDialog::debug(fileName());
 
-//        params << "../../../../EagleXml_ForCircuitStacks-master/xml_main.py " + fileName();
-        p.start("python ../../../../EagleXml_ForCircuitStacks-master/xml_main.py " + fileName());
-        p.waitForFinished(-1);
-    }
+////        params << "../../../../EagleXml_ForCircuitStacks-master/xml_main.py " + fileName();
+//        p.start("python ../../../../EagleXml_ForCircuitStacks-master/xml_main.py " + fileName());
+//        p.waitForFinished(-1);
+//    }
 
-}
+//}
 
 void MainWindow::exportEtchable() {
 	if (sender() == NULL) return;
@@ -1038,10 +1038,10 @@ void MainWindow::createExportActions() {
 	m_exportEtchablePdfAct->setProperty("svg", false);
 	connect(m_exportEtchablePdfAct, SIGNAL(triggered()), this, SLOT(exportEtchable()));
 
-    m_exportCircuitStackAct = new QAction(tr("CircuitStack..."), this);
-    m_exportCircuitStackAct->setStatusTip(tr("Export the current sketch to Eagle for CircuitStack production (photoresist)"));
-    m_exportCircuitStackAct->setProperty("svg", false);
-    connect(m_exportCircuitStackAct, SIGNAL(triggered()), this, SLOT(exportCircuitStack()));
+//    m_exportCircuitStackAct = new QAction(tr("CircuitStack..."), this);
+//    m_exportCircuitStackAct->setStatusTip(tr("Export the current sketch to Eagle for CircuitStack production (photoresist)"));
+//    m_exportCircuitStackAct->setProperty("svg", false);
+//    connect(m_exportCircuitStackAct, SIGNAL(triggered()), this, SLOT(exportCircuitStack()));
 
 	m_exportEtchableSvgAct = new QAction(tr("Etchable (SVG)..."), this);
 	m_exportEtchableSvgAct->setStatusTip(tr("Export the current sketch to SVG for DIY PCB production (photoresist)"));

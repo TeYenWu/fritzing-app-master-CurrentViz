@@ -283,7 +283,7 @@ protected slots:
     void print();
     void doExport();
     void exportEtchable();
-    void exportCircuitStack();
+//    void exportCircuitStack();
     void about();
 	void tipsAndTricks();
 	void firstTimeHelp();
@@ -557,7 +557,7 @@ protected:
 	QWidget *createViewFromButton(SketchAreaWidget *parent);
 	class ExpandingLabel * createRoutingStatusLabel(SketchAreaWidget *);
 	SketchToolButton *createExportEtchableButton(SketchAreaWidget *parent);
-    SketchToolButton *createExportCircuitStackButton(SketchAreaWidget *parent);
+//    SketchToolButton *createExportCircuitStackButton(SketchAreaWidget *parent);
 	SketchToolButton *createNoteButton(SketchAreaWidget *parent);
 	QWidget *createToolbarSpacer(SketchAreaWidget *parent);
 	SketchAreaWidget *currentSketchArea();

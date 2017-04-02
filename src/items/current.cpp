@@ -23,14 +23,13 @@
 #include "../items/wire.h"
 #include <QVector2D>
 #include <QtMath>
-
+float threshold = 0.006;
+float min = 5;
+float max = 150;
 #define ALLMOUSEBUTTONS (Qt::LeftButton | Qt::MidButton | Qt::RightButton | Qt::XButton1 | Qt::XButton2)
 Current::Current(ConnectorItem *item1, ConnectorItem *item2, bool main)
     :QObject() , QGraphicsItem()
 {
-//    QTimer *timer = new QTimer(this);
-//    connect(timer, SIGNAL(timeout()), this, SLOT(test()));
-//    timer->start(1000);
     m_inactive = false;
     m_hoverEnterSpaceBarWasPressed = m_spaceBarWasPressed = false;
     firstItem = item1;
@@ -38,18 +37,13 @@ Current::Current(ConnectorItem *item1, ConnectorItem *item2, bool main)
     m_main = main;
     if(m_main){
         width = item1->boundingRect().width();
-        qreal shigtHeight = firstItem->boundingRect().bottom() - firstItem->boundingRect().center().y();
-        height = qAbs(item1->boundingRect().bottom()-item2->boundingRect().top())+shigtHeight;
-    }
-    else{
-        width = qAbs(item1->boundingRect().right() - item2->boundingRect().left());
-        height = item1->boundingRect().height();
+        height = qAbs(item1->boundingRect().top()-item2->boundingRect().top());
     }
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(ALLMOUSEBUTTONS);
     setToolTip(QString("%1").arg(item1->boundingRect().center().y()));
     this->setPos(firstItem->scenePos());
-    this->setZValue(10);
+    this->setZValue(0);
     this->hide();
 }
 
@@ -73,13 +67,13 @@ void Current::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
     hoverUpdate();
 }
 void Current::hoverLeaveEvent(QGraphicsSceneHoverEvent * event ){
-    DebugDialog::debug("LineLeave");
+    DebugDialog::debug(QString("%1").arg(this->zValue()));
 }
 void Current::mousePressEvent( QGraphicsSceneMouseEvent *event ){
-    DebugDialog::debug("LinePress");
+    DebugDialog::debug(QString("%1").arg(this->zValue()));
 }
 void Current::mouseReleaseEvent( QGraphicsSceneMouseEvent *event ){
-    DebugDialog::debug("LineRelease");
+     DebugDialog::debug(QString("%1").arg(this->zValue()));
 }
 bool Current::inHover(){
     return !m_inactive;
@@ -88,15 +82,31 @@ void Current::hoverUpdate() {
     this->update();
 }
 void Current::setCurrentValue(float value){
-    if(value == 0){
+    if(value < threshold && value > -threshold){
+        currentValue = 0;
+        this->setZValue(0);
         this->hide();
     }
     else{
+        DebugDialog::debug(QString("%1").arg(value));
+        this->show();
+        this->setZValue(10);
+        if(currentValue-value > threshold || currentValue-value < -threshold){
+            if(qAbs(value)*1000 >= min && qAbs(value)*1000 < max/4)
+                currentColor = QColor(0, qAbs(value)*255000/(max/4),255, 255);
+            else if (qAbs(value)*1000 >= max/4 && qAbs(value)*1000 < max/2)
+                currentColor = QColor(0, 255, qAbs(255-qAbs(value)*255000/(max/2)), 255);
+            else if (qAbs(value)*1000 >= max / 2 && qAbs(value)*1000 < 3 * max/4)
+                currentColor = QColor(qAbs(value)*255000/(3*max/4) ,255, 0, 255);
+            else if (qAbs(value)*1000 >= 3 * max/4 && qAbs(value)*1000 < max)
+                currentColor = QColor(255, qAbs(255-qAbs(value)*255000/max), 0, 255);
+            this->update();
+        }
         currentValue = value;
-        this->update();
     }
 }
-void Current::start(){
+void Current::start(bool inOrOut){
+    m_main = inOrOut;
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(test()));
     if(!testing){
@@ -108,27 +118,25 @@ void Current::start(){
 void Current::test(){
     testing = true;
     m_state += 1;
-    if(m_state == 15)
+    if(m_state == 7)
        m_state = 0;
     this->update();
 }
 
 
-int Current::getCurrentValue(){
+float Current::getCurrentValue(){
     return currentValue;
 }
 void Current::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     QPen myPen(Qt::red, 1, Qt::SolidLine);
-    QPen myPen1(Qt::red, 0.5, Qt::SolidLine);
-    currentColor = QColor(0,0,255,255);
-    setZValue(10);
+//    currentColor = QColor(255 ,255 , 0, 255);
+
     if(m_main){
-        qreal shiftY = (firstItem->boundingRect().bottom() - firstItem->boundingRect().center().y())/2.0; // shift boundRect
-        QPointF p2 = firstItem->scenePos()+QPointF(0,shiftY);
-        this->setPos(p2);
         painter->setPen(myPen);
-//        painter->drawRect(this->boundingRect());
-        if(currentValue > 0){
+        qreal shiftY = (secondItem->boundingRect().bottom() - secondItem->boundingRect().center().y())/2.0; // shift boundRect
+        QPointF p2 = secondItem->scenePos()+QPointF(0,shiftY);
+        this->setPos(p2);
+        if(currentValue > threshold){
             QPainterPath path;
             QRectF tri = this->boundingRect();
             qreal offset = this->boundingRect().height()/10 * m_state;
@@ -138,8 +146,9 @@ void Current::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
             path.lineTo(tri.left(),tri.bottom()-offset);
             painter->fillPath (path, QBrush (currentColor));
 
+
         }
-        else if(currentValue < 0){
+        else if(currentValue < -threshold){
             QPainterPath path;
             QRectF tri = this->boundingRect();
             qreal offset = this->boundingRect().height()/10 * m_state;
@@ -149,79 +158,43 @@ void Current::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
             path.lineTo(tri.left(),tri.top()+offset);
             painter->fillPath (path, QBrush (currentColor));
         }
-        if(firstItem->connectedToItems().size() > 0 && currentValue < 0){
-
-            if(firstItem->connectedToItems().at(0)->attachedToItemType() == ModelPart::Wire){
-                Wire * wire = (Wire *)firstItem->connectedToItems().at(0)->attachedTo();
-                QPointF offset = -(wire->line().p2() - wire->line().p1())/15 *m_state;
-                QPainterPath path;
-                QPointF triCenter = wire->line().p1() + offset + this->boundingRect().center();
-                QVector2D* vector = new QVector2D(offset);
-                vector->normalize();
-                qreal dot = vector->y();
-                QVector2D* verticalVector = new QVector2D(vector->y(), -vector->x());
-                triCenter = triCenter + QPointF(width/2 * qSin(qAcos(dot)),- height/2);
-                float sideLength = 5;
-                path.moveTo(triCenter-(*vector*sideLength/2-*verticalVector*sideLength/2).toPointF());
-                path.lineTo(triCenter-(*vector*sideLength/2+*verticalVector*sideLength/2).toPointF());
-                path.lineTo(triCenter+ (*vector*sideLength/2).toPointF());
-                path.lineTo(triCenter-(*vector*sideLength/2-*verticalVector*sideLength/2).toPointF());
-                painter->fillPath (path, QBrush (currentColor));
+        if(secondItem->connectedToItems().size() > 0){
+            if(secondItem->connectedToItems().at(0)->attachedToItemType() == ModelPart::Wire){
+                Wire * wire = (Wire *)secondItem->connectedToItems().at(0)->attachedTo();
+//                wire->setColor(currentColor, 1);
+//                QPointF offset = -(wire->line().p2() - wire->line().p1())/15 *m_state;
+//                QPointF offset1 = -(wire->line().p2() - wire->line().p1())/15 *m_state * 2 ;
+//                QPainterPath path;
+//                QPainterPath path1;
+//                QPointF triCenter = wire->line().p1() + offset + this->boundingRect().center();
+//                QPointF triCenter1 = wire->line().p1() + offset1 + this->boundingRect().center();
+//                QVector2D* vector = new QVector2D(offset);
+//                vector->normalize();
+//                qreal dot = vector->y();
+//                QVector2D* verticalVector = new QVector2D(vector->y(), -vector->x());
+//                triCenter = triCenter + QPointF(width/2 * qSin(qAcos(dot)),- height/2);
+//                triCenter1 = triCenter1 + QPointF(width/2 * qSin(qAcos(dot)),- height/2);
+//                float sideLength = 5;
+//                path.moveTo(triCenter-(*vector*sideLength/2-*verticalVector*sideLength/2).toPointF());
+//                path.lineTo(triCenter-(*vector*sideLength/2+*verticalVector*sideLength/2).toPointF());
+//                path.lineTo(triCenter+ (*vector*sideLength/2).toPointF());
+//                path.lineTo(triCenter-(*vector*sideLength/2-*verticalVector*sideLength/2).toPointF());
+//                path1.moveTo(triCenter1-(*vector*sideLength/2-*verticalVector*sideLength/2).toPointF());
+//                path1.lineTo(triCenter1-(*vector*sideLength/2+*verticalVector*sideLength/2).toPointF());
+//                path1.lineTo(triCenter1+ (*vector*sideLength/2).toPointF());
+//                path1.lineTo(triCenter1-(*vector*sideLength/2-*verticalVector*sideLength/2).toPointF());
+//                painter->fillPath (path, QBrush (currentColor));
+//                painter->fillPath (path1, QBrush (currentColor));
             }
-//            QPointF position = this->boundingRect().topLeft();
-//            QRectF items = firstItem->connectedToItems().at(0)->attachedTo()->boundingRect();
-//            items.moveTo(position.x(),position.y() - items.height());
-//            QPainterPath path;
-//            qreal offset = this->boundingRect().height()/10 * m_state;
-//            painter->drawRect(items);
-//            path.moveTo(items.right()-offset,items.top());
-//            path.lineTo(items.right()-items.height()-offset,items.center().y());
-//            path.lineTo(items.right()-offset,items.bottom());
-//            path.lineTo(items.right()-offset,items.top());
-//            painter->fillPath (path, QBrush (currentColor));
-
         }
     }
-    else{
-        qreal shiftX = (firstItem->boundingRect().right() - firstItem->boundingRect().center().x())/2.0; // shift boundRect
-        QPointF p3 = firstItem->scenePos()+QPointF(shiftX,0);
-        this->setPos(p3);
-        painter->setPen(myPen);
-//        painter->drawRect(this->boundingRect());
-        if(currentValue > 0){
-            QPainterPath path;
-            QRectF tri = this->boundingRect();
-            QPointF leftTri[3]= {QPointF(tri.left(),tri.center().y()),QPointF(tri.right(),tri.bottom()),QPointF(tri.right(),tri.top())};
-            path.moveTo(tri.left(),tri.center().y());
-            path.lineTo(tri.right(),tri.bottom());
-            path.lineTo(tri.right(),tri.top());
-            path.lineTo(tri.left(),tri.center().y());
-            painter->drawConvexPolygon(leftTri, 3);
-            painter->fillPath (path, QBrush (QColor("green")));
-        }
-        else if(currentValue < 0){
-            QPainterPath path;
-            QRectF tri = this->boundingRect();
-            path.moveTo(tri.right(),tri.center().y());
-            path.lineTo(tri.left(),tri.bottom());
-            path.lineTo(tri.left(),tri.top());
-            path.lineTo(tri.right(),tri.center().y());
-            QPointF rightTri[3]= {QPointF(tri.right(),tri.center().y()),QPointF(tri.left(),tri.bottom()),QPointF(tri.left(),tri.top())};
-            painter->drawConvexPolygon(rightTri, 3);
-            painter->fillPath (path, QBrush (QColor("green")));
-        }
-    }
-
 }
 
 
 QRectF Current::boundingRect() const {
-    if(m_main){
-        QPointF p1 = QPointF(firstItem->boundingRect().left(), firstItem->boundingRect().center().y());
-        return QRectF(p1.x(), p1.y(), width, height);
-    }
-    else{
-        QPointF p1 = QPointF(firstItem->boundingRect().center().x(), firstItem->boundingRect().top());
+    if(m_main && secondItem){
+        qreal shifty = qAbs(firstItem->boundingRect().top() - secondItem->boundingRect().bottom());
+        QPointF p1 = QPointF(secondItem->boundingRect().left(), secondItem->boundingRect().top()+shifty);
         return QRectF(p1.x(), p1.y(), width, height);
     }
 }

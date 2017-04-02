@@ -1423,7 +1423,7 @@ void MainWindow::createFileMenu() {
 	m_exportMenu->addAction(m_exportNetlistAct);
 	m_exportMenu->addAction(m_exportSpiceNetlistAct);
 
-    m_exportMenu->addAction(m_exportCircuitStackAct);
+//    m_exportMenu->addAction(m_exportCircuitStackAct);
 }
 
 void MainWindow::populateExportMenu() {

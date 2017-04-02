@@ -1,7 +1,7 @@
 #include "currentVizThread.h"
 #include <QtCore>
 #include <QDebug>
-
+#include "../debugdialog.h"
 
 
 CurrentVizThread* CurrentVizThread::m_instance = 0;
@@ -67,28 +67,39 @@ void CurrentVizThread::close()
 void CurrentVizThread::readData(QSerialPort* serialPort)
 {
 
-
     if(serialPort->waitForReadyRead(waitTimeForRead))
     {
-        while(serialPort->bytesAvailable() < 4)
-            serialPort->waitForReadyRead(10);
+        for(int i=0; i < 240 ; i++)
         {
-            QMutexLocker locker(&m_mutex);
-            char *data;
-            serialPort->read(data, 4);
-            CurrentValue* current = new CurrentValue();
-            current->value = data[2]*8 + data[3];
-            current->row = data[0];
-            current->pin = data[1];
-            emit readyRead(current);
+            while(serialPort->bytesAvailable() < 2)
+                serialPort->waitForReadyRead(10);
+            {
+                QMutexLocker locker(&m_mutex);
+                QByteArray data;
+                data = serialPort->read(2);
+                QByteArray data_hex = data.toHex();
+//                if(count == 2)
+//                     qDebug() << "Reading 2 Bytes";
+                CurrentValue* current = new CurrentValue();
+                unsigned short value = (data.at(0) & 0x00FF)|((data.at(1) & 0x000F) << 8);
+                DebugDialog::debug(QString("%1 %2 %3 %4 %5").arg(data_hex[0]).arg(data_hex[1]).arg(data_hex[2]).arg(data_hex[3]).arg(value));
+                float gain = (data[1] >> 4) & 0x01 ? 100.0f : 10.0f;
+                current->value = (((float(value) -2048) / 2048) * 5 / (gain)) / 0.1f;
+                current->row = i/10;
+                current->pin = i%10;
+                DebugDialog::debug(QString("%1 %2 %3").arg(current->value).arg(current->row).arg(current->pin));
+                if(current->pin == 4 || current->pin == 9) continue;
+                emit readyRead(current);
+            }
         }
-        msleep(100);
+        msleep(1000);
         qDebug() << "Reading Finished";
     }
 }
 
 void CurrentVizThread::run()
 {
+
     qDebug()<< "Runnning  ThreadID:  " << currentThreadId();
     QSerialPort* serialPort = new QSerialPort(this);
     while(!m_close)
@@ -126,26 +137,19 @@ void CurrentVizThread::run()
             }
         }
 
-//        const char str[] = {0x11, m_row, m_pin, 0x23};
+        const char str[] = {0x24};
+//        if(test)
+//            return;
+        bool succces = serialPort->write(str, 1);
+//        test = true;
+        if(!succces || !serialPort->waitForBytesWritten(waitTimeForWritten)){
+            emit onError(serialPort->errorString());
+            continue;
+        }
+        qDebug() << "written";
 
-//        bool succces = serialPort->write(str, 4);
-//        if(!succces || !serialPort->waitForBytesWritten(waitTimeForWritten)){
-//            emit onError(serialPort->errorString());
-//            continue;
-//        }
-//        qDebug() << "written";
+        readData(serialPort);
 
-//        readData(serialPort);
-
-//        if (m_row < 24 - 1)
-//            m_row ++;
-//        else
-//            m_row = 0;
-
-//        if (m_pin < 10 - 1)
-//            m_pin ++;
-//        else
-//            m_pin = 0;
     }
 //    qDebug()<<"Thread::Quit";
 }
