@@ -7,11 +7,12 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtCore>
 
+const int SENSETHRESHOLD = 50;
 class CircuitSenseThreadData : public QSharedData
 {
 public:
-    int row;
-    int pin;
+    QVector<int> pins;
+    QString spec;
 };
 
 class CircuitSenseThread : public QThread
@@ -25,10 +26,12 @@ public:
     ~CircuitSenseThread();
     void run() Q_DECL_OVERRIDE;
     void startCircuitSenseThread();
-    void readData(QSerialPort* serialPort);
+    void readPLSData(QSerialPort* serialPort);
+    int readCRData(QSerialPort* serialPort);
 
 signals:
-    void readyRead(CircuitSenseThreadData*);
+    void senseChangedClips(QVector<int>);
+    void recognizeComponent(CircuitSenseThreadData);
     void onError(QString error);
     void onConnected();
     void onDisconnected();
@@ -48,8 +51,9 @@ private:
     qint32 baudRate;
     bool m_stop;
     bool m_close;
-    unsigned char m_row;
-    unsigned char m_pin;
+    QVector<QVector<int>> sensorValueArray;
+    QVector<int> changdClipList;
+    QTime timer;
 };
 
 #endif // CIRCUITSENSETHREAD_H

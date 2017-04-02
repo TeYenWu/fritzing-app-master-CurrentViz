@@ -38,51 +38,51 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const ViewGeometry & viewGeometry, long id, QMenu * itemMenu, bool doLabel)
 	: PaletteItem(modelPart, viewID, viewGeometry, id, itemMenu, doLabel)
 {
-    CurrentVizThread* thread = CurrentVizThread::getInstantce();
-    connect(thread, &CurrentVizThread::readyRead, this, &Breadboard::readData, Qt::BlockingQueuedConnection);
+//    CurrentVizThread* thread = CurrentVizThread::getInstantce();
+//    connect(thread, &CurrentVizThread::readyRead, this, &Breadboard::readData, Qt::BlockingQueuedConnection);
 }
 
 
 Breadboard::~Breadboard() {
     // destructor currentItem
-    for(int col_index = 0 ; col_index < 24 ; col_index ++){
-        for(int row_index = 0 ; row_index < 10 ; row_index ++){
-            delete m_currentList[col_index][row_index];
-        }
-    }
-    for(int col_index = 0 ; col_index < 24 ; col_index ++){
-        for(int row_index = 0 ; row_index < 10 ; row_index ++){
-            delete b_currentList[col_index][row_index];
-        }
-    }
+//    for(int col_index = 0 ; col_index < 24 ; col_index ++){
+//        for(int row_index = 0 ; row_index < 10 ; row_index ++){
+//            delete m_currentList[col_index][row_index];
+//        }
+//    }
+//    for(int col_index = 0 ; col_index < 24 ; col_index ++){
+//        for(int row_index = 0 ; row_index < 10 ; row_index ++){
+//            delete b_currentList[col_index][row_index];
+//        }
+//    }
 }
 
 void Breadboard::test(){
-    for(int i = 0; i < 24; i++){
-        for(int j = 0; j < 10; j++){
-            if(j == 4 || j == 9){
-                continue;
-            }
-            m_currentList[i][j]->start();
-        }
-    }
+//    for(int i = 0; i < 24; i++){
+//        for(int j = 0; j < 10; j++){
+//            if(j == 4 || j == 9){
+//                continue;
+//            }
+//            m_currentList[i][j]->start();
+//        }
+//    }
 }
 
 void Breadboard::addedToScene(bool temporary)
 {
-    PaletteItem::addedToScene(temporary);
-    foreach (QVector<Current*> currents, m_currentList) {
-        foreach (Current* current, currents) {
-            this->scene()->addItem(current);
+//    PaletteItem::addedToScene(temporary);
+//    foreach (QVector<Current*> currents, m_currentList) {
+//        foreach (Current* current, currents) {
+//            this->scene()->addItem(current);
 //            current->setZValue(3); // move currentItem to top of scene
-         }
-     }
-    foreach (QVector<Current*> b_currents, b_currentList) {
-        foreach (Current* b_current, b_currents) {
-            this->scene()->addItem(b_current);
+//         }
+//     }
+//    foreach (QVector<Current*> b_currents, b_currentList) {
+//        foreach (Current* b_current, b_currents) {
+//            this->scene()->addItem(b_current);
 //            b_current->setZValue(3); // move currentItem to top of scene
-        }
-     }
+//        }
+//     }
 }
 
 
@@ -219,7 +219,7 @@ void Breadboard::paintBody(QPainter *painter, const QStyleOptionGraphicsItem *op
 //    painter->drawLine(nodeX[3],nodeY[2],nodeX[3],nodeY[9]);
 }
 void Breadboard::readData(CurrentValue *current){
-    m_currentList[current->row][current->pin]->setCurrentValue(current->value);
+//    m_currentList[current->row][current->pin]->setCurrentValue(current->value);
 }
 
 bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers, LayerAttributes & layerAttributes)
@@ -235,20 +235,20 @@ bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers,
 //            delete b_currentList[col_index][row_index];
 //        }
 //    }
-    items = cachedConnectorItems();
-    qSort(items.begin(),items.end(), Breadboard::connectItemComparsion);
-    // initial _currentList to 24*8 array
-    m_currentList.resize(nRowOfCurrent);
-    for(int col_index = 0 ; col_index < m_currentList.size() ;col_index ++){
-        m_currentList[col_index].resize(10);
-    }
-    b_currentList.resize(nRowOfCurrent);
-    for(int col_index = 0 ; col_index < b_currentList.size() ;col_index ++){
-        b_currentList[col_index].resize(10);
-    }
-    int count = 0;
-    int rowIndex = 0;
-    int pinIndex = 1;
+//    items = cachedConnectorItems();
+//    qSort(items.begin(),items.end(), Breadboard::connectItemComparsion);
+//    // initial _currentList to 24*8 array
+//    m_currentList.resize(nRowOfCurrent);
+//    for(int col_index = 0 ; col_index < m_currentList.size() ;col_index ++){
+//        m_currentList[col_index].resize(10);
+//    }
+//    b_currentList.resize(nRowOfCurrent);
+//    for(int col_index = 0 ; col_index < b_currentList.size() ;col_index ++){
+//        b_currentList[col_index].resize(10);
+//    }
+//    int count = 0;
+//    int rowIndex = 0;
+//    int pinIndex = 1;
 //    for(int j = 0 ; j < items.size() ; j++){
 //        ConnectorItem *item1 = items.at(j);
 //        if (item1->boundingRect().center().y() > 150 || item1->boundingRect().center().y() < 40){
@@ -270,9 +270,9 @@ bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers,
 //        count++;
 //        pinIndex++;
 //    }
-    count = 0;
-    pinIndex = 1;
-    rowIndex = 0;
+//    count = 0;
+//    pinIndex = 1;
+//    rowIndex = 0;
 //    for(int j = 0 ; j < items.size() ; j++){
 //        ConnectorItem *item1 = items.at(j);
 //        if (item1->boundingRect().center().y() > 170 || item1->boundingRect().center().y() < 25){
