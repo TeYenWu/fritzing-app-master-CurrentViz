@@ -2,7 +2,6 @@
 
 # QtCreator folders and files #
 #####################
-phoenix.pro.user
 /phoenix-build-*
 *.user
 *.user*
@@ -13,6 +12,8 @@ phoenix.pro.user
 #/tools
 /bins
 /release64
+/debug64
+/build-*
 /tools
 /debug64
 /build-*
