@@ -7,7 +7,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtCore>
 
-const int SENSETHRESHOLD = 50;
+const int SENSETHRESHOLD = 110;
 class CircuitSenseThreadData : public QSharedData
 {
 public:
@@ -30,7 +30,7 @@ public:
     int readCRData(QSerialPort* serialPort);
 
 signals:
-    void senseChangedClips(QVector<int>);
+    void senseChangedClips(QVector<int>, int);
     void recognizeComponent(CircuitSenseThreadData);
     void onError(QString error);
     void onConnected();
@@ -54,6 +54,7 @@ private:
     QVector<QVector<int>> sensorValueArray;
     QVector<int> changdClipList;
     QTime timer;
+    bool isIntialized;
 };
 
 #endif // CIRCUITSENSETHREAD_H

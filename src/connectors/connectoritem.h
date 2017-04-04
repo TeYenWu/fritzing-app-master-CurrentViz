@@ -156,16 +156,18 @@ public:
     bool isConnected();
     void branchCurrentSetColor();
     void setBranchValue(bool value);
+    void setNormalColor();
+    void setConnectedColor();
+    void setUnconnectedColor();
+    void setColorAux(const QBrush & brush, const QPen & pen, bool paint);
+    void setColorAux(const QColor &color, bool paint=true);
 protected:
 	void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
 	void hoverLeaveEvent( QGraphicsSceneHoverEvent * event );
 	void hoverMoveEvent( QGraphicsSceneHoverEvent * event );
 	void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-	void setNormalColor();
-	void setConnectedColor();
-	void setUnconnectedColor();
-	void setColorAux(const QBrush & brush, const QPen & pen, bool paint);
-	void setColorAux(const QColor &color, bool paint=true);
+
+
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

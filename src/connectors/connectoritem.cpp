@@ -637,18 +637,9 @@ void ConnectorItem::setHoverColor() {
     QColor red(Qt::red);
     QColor blue(Qt::blue);
 	m_attachedTo->getHoverColor(this, brush, pen, m_opacity, m_negativePenWidth, m_negativeOffsetRect);
-    if(this->isConnected())
-    {
-        if(inOrOut == 1){
-            pen.setColor(red);
-            brush.setColor(red);
-        }
-        else if(inOrOut == 2){
-            pen.setColor(blue);
-            brush.setColor(blue);
-        }
-    }
-	setColorAux(brush, pen, true);
+    pen.setColor(red);
+    brush.setColor(red);
+    setColorAux(brush, pen, true);
 }
 
 void ConnectorItem::setColorAux(const QBrush & brush, const QPen & pen, bool paint) {

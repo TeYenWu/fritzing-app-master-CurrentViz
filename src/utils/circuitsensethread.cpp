@@ -1,5 +1,5 @@
 #include "circuitsensethread.h"
-
+#include "../debugdialog.h"
 
 CircuitSenseThread* CircuitSenseThread::m_instance = 0;
 
@@ -19,6 +19,11 @@ CircuitSenseThread::CircuitSenseThread() : data(new CircuitSenseThreadData)
         QVector<int> vector = {0,0,0,0,0,0,0,0,0,0};
         sensorValueArray.push_back(vector);
     }
+    isIntialized =false;
+    m_stop = true;
+    m_close = false;
+    waitTimeForWritten = 3000;
+    waitTimeForRead = 3000;
 }
 
 CircuitSenseThread::CircuitSenseThread(const CircuitSenseThread &rhs) : data(rhs.data)
@@ -71,7 +76,8 @@ void CircuitSenseThread::close()
 
 void CircuitSenseThread::readPLSData(QSerialPort* serialPort)
 {
-
+    // 79, 77, 76, 75, 68~64, 58, 56, 54, 51, 45, 46, 44, 36,37, 29, 28, 27, 24~20, 10~15, 17, 0~5
+    // 28, (15) , 37, 45, 50, 57,
     if(serialPort->waitForReadyRead(waitTimeForRead))
     {
         QVector<int> tempClipList;
@@ -84,20 +90,66 @@ void CircuitSenseThread::readPLSData(QSerialPort* serialPort)
                 QByteArray bytes = serialPort->read(2);
                 int pin = i % 10;
                 int row = i / 10;
-                int value = bytes.toShort();
+                unsigned short value = (bytes.at(0) & 0x00FF)|((bytes.at(1) & 0x000F) << 8);
                 int preValue = sensorValueArray[row][pin];
-                if(abs(preValue - value) > SENSETHRESHOLD)
+                int threshold = preValue/20 > 50 ? 50 : preValue/20;
+                if(abs(preValue - value) > threshold && isIntialized)
                 {
-                    tempClipList.push_back(i);
-                    changdClipList.push_back(i);
+                    if(changdClipList.indexOf(i) != -1)
+                    {
+
+                    }
+                    else
+                    {
+                        if(i==39 || i==3 || i ==9 || i == 15 || i == 44 || i == 57 || i==37 || i==50) continue;
+                        if(i == 4 || i == 5 || i == 14 || i==15 || i ==24 || i == 25 || i == 34 || i==35)
+                        {
+                            changdClipList.push_back(4);
+                            changdClipList.push_back(5);
+                            changdClipList.push_back(14);
+                            changdClipList.push_back(15);
+                            changdClipList.push_back(24);
+                            changdClipList.push_back(25);
+                            changdClipList.push_back(34);
+                            changdClipList.push_back(35);
+
+                            tempClipList.push_back(4);
+                            tempClipList.push_back(5);
+                            tempClipList.push_back(14);
+                            tempClipList.push_back(15);
+                            tempClipList.push_back(24);
+                            tempClipList.push_back(25);
+                            tempClipList.push_back(34);
+                            tempClipList.push_back(35);
+                        }
+                        else
+                        {
+                            changdClipList.push_back(i);
+                            tempClipList.push_back(i);
+                        }
+                        sensorValueArray[row][pin] = value;
+
+                        timer.restart();
+                    }
                 }
+
+                if (!isIntialized)
+                {
+                    sensorValueArray[row][pin] = value;
+
+                }
+                DebugDialog::debug(QString("%1 %2 %3").arg(row).arg(pin).arg(value));
             }
-            msleep(1);
-            qDebug() << "Reading Finished";
+
+        }
+        if (!isIntialized)
+        {
+            isIntialized = true;
         }
         if(tempClipList.size()>0){
-            emit senseChangedClips(tempClipList);
+            emit senseChangedClips(tempClipList, 0);
         }
+         msleep(600);
     }
 }
 
@@ -112,13 +164,11 @@ int CircuitSenseThread::readCRData(QSerialPort* serialPort)
         {
             byteArray = serialPort->read(4000);
         }
-
         QString filename = "data.txt";
         QFile file(filename);
         if (file.open(QIODevice::ReadWrite)) {
             file.write(byteArray);
             file.close();
-
             QProcess p;
             QStringList params;
             p.start("python CR.py");
@@ -134,10 +184,8 @@ int CircuitSenseThread::readCRData(QSerialPort* serialPort)
                 tmpdata.spec = output;
                 emit recognizeComponent(tmpdata);
             }
-
         }
 //        params << "../../../../EagleXml_ForCircuitStacks-master/xml_main.py " + fileName();
-
     }
 }
 
@@ -183,10 +231,12 @@ void CircuitSenseThread::run()
             }
         }
 
-        if(changdClipList.size() > 0 && timer.elapsed() > 2000)
+        if(changdClipList.size() > 0 && timer.elapsed() > 1500)
         {
+//            emit senseChangedClips(changdClipList);
             for(int amp = 0; amp < 4 ; amp++)
             {
+                break;
                 QProcess p;
                 p.start("python amp.py " + QString::number(amp));
                 p.waitForFinished();
@@ -209,6 +259,9 @@ void CircuitSenseThread::run()
                     break;
                 }
             }
+            changdClipList.clear();
+            timer.restart();
+
         }
         const char str[] = {0x24};
 
