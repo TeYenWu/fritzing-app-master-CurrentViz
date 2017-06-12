@@ -41,14 +41,19 @@ Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const V
 {
     CurrentVizThread* thread = CurrentVizThread::getInstantce();
     connect(thread, &CurrentVizThread::readyRead, this, &Breadboard::readData, Qt::BlockingQueuedConnection);
-    m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(autoDetection()));
-    m_timer->start(2000);
+//    CircuitSenseThread* thread1 = CircuitSenseThread::getInstantce();
+//    connect(thread1, &CircuitSenseThread::senseChangedClips, this, &Breadboard::onSensingClips, Qt::BlockingQueuedConnection);
+//    connect(thread1, &CircuitSenseThread::recognizeComponent, this, &Breadboard::recognizeComponent, Qt::BlockingQueuedConnection);
+    connectorItem_timer = new QTimer(this);
+    connect(connectorItem_timer, SIGNAL(timeout()), this, SLOT(autoDetection()));
+    connectorItem_timer->start(2000);
+//    insert_timer = new QTimer(this);
+//    connect(insert_timer, SIGNAL(timeout()), this, SLOT(detectInsert()));
 }
 
 
 Breadboard::~Breadboard() {
-    // destructor currentItem
+//    // destructor currentItem
     for(int col_index = 0 ; col_index < 24 ; col_index ++){
         for(int row_index = 0 ; row_index < 10 ; row_index ++){
             delete m_currentList[col_index][row_index];
@@ -58,16 +63,24 @@ Breadboard::~Breadboard() {
 
 void Breadboard::test(){
     bool inOrOut = true;
+    autoDetection();
     for(int i = 0; i < 24; i++){
         for(int j = 0; j < 10; j++){
             if( j == 4 || j == 9){
                 continue;
             }
+//            m_currentList[i][j]->setCurrentValue(0.04);
+            if(i==3&&j<5)
+                m_currentList[i][j]->setCurrentValue(0.0252);
+            else if (i == 2 && j<5 && j>=1)
+                m_currentList[i][j]->setCurrentValue(-0.528);
+            else if (i ==4 && j < 5 )
+                m_currentList[i][j]->setCurrentValue(0.4732);
             m_currentList[i][j]->start(inOrOut);
+
         }
     }
 }
-
 void Breadboard::addedToScene(bool temporary)
 {
     PaletteItem::addedToScene(temporary);
@@ -94,21 +107,15 @@ void Breadboard::hoverUpdate()
 }
 
 void Breadboard::autoDetection(){
-//    m_timer->stop();
-//    InfoGraphicsView * infoGraphicsView = InfoGraphicsView::getInfoGraphicsView(this);
-//    m_sketchWidget = dynamic_cast<SketchWidget *>(infoGraphicsView);
-//    QString newModuleID = QString("ResistorModuleID");
-//    m_sketchWidget->autoDetect(connectorItems,newModuleID, this);
-//    connectorItems.clear();
+
     float min = 5;
-    float max = 150;
+    float max = 550;
     for(int i = 0; i < items.size(); i++){
         ConnectorItem * item = items.at(i);
         QColor wireColor;
         float value;
         qreal offset = item->boundingRect().center().y();
         if(item->connectedToWires()){
-
             if(i%10 == 0){
                 value = m_currentList[i/10][i%10]->getCurrentValue();
             }
@@ -116,7 +123,6 @@ void Breadboard::autoDetection(){
                 value = m_currentList[i/10][i%10]->getCurrentValue() - m_currentList[i/10][i%10 -1]->getCurrentValue();
 
             }
-
             if(qAbs(value)*1000 >= min && qAbs(value)*1000 < max/4)
                 wireColor = QColor(0, qAbs(value)*255000/(max/4),255, 255);
             else if (qAbs(value)*1000 >= max/4 && qAbs(value)*1000 < max/2)
@@ -126,11 +132,8 @@ void Breadboard::autoDetection(){
             else if (qAbs(value)*1000 >= 3 * max/4 && qAbs(value)*1000 < max)
                 wireColor = QColor(255, qAbs(255-qAbs(value)*255000/max), 0, 255);
             Wire * wire = (Wire *)item->connectedToItems().at(0)->attachedTo();
-            wire->setColor(wireColor, 1);
-
-
+            wire->setColor(QColor(255,0,0,255), 1);
         }
-
     }
 }
 
@@ -171,7 +174,7 @@ void Breadboard::paintBody(QPainter *painter, const QStyleOptionGraphicsItem *op
     ItemBase::paintBody(painter, option, widget);
 }
 void Breadboard::readData(CurrentValue *current){
-    if(current->row == 2||current->row == 4 || current->row == 7||current->row == 9 ||current->row == 14 || current->row == 12 || current->row == 13)
+//    if(current->row == 4||current->row == 3 || current->row == 8 || current->row == 12)
         if(m_currentList.size() != 0 && current->pin < 5)
             m_currentList[current->row][current->pin]->setCurrentValue(current->value);
 //    connectorItems.append(items.at(num));
@@ -189,7 +192,6 @@ bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers,
     int count = 0;
     int rowIndex = 0;
     int pinIndex = 1;
-    int x = items.size();
     QList<int> remove ;
     for(int j = 0 ; j < items.size() ; j++){
         ConnectorItem *item1 = items.at(j);
@@ -217,7 +219,10 @@ bool Breadboard::setUpImage(ModelPart * modelPart, const LayerHash & viewLayers,
     for(int i=remove.size() - 1; i>=0; i--){
         items.removeAt(remove[i]);
     }
-    int y = items.size();
+    m_items.clear();
+    for(int i = 0; i < items.size();i++){
+        m_items.append(items.at(i));
+    }
     return flag;
 }
 

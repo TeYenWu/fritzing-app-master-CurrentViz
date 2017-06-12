@@ -51,9 +51,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
     intValidator = new QIntValidator(0, 4000000, this);
 
-    CircuitSenseThread* thread = CircuitSenseThread::getInstantce();
-    thread->startCircuitSenseThread();
-
+//    CircuitSenseThread* thread = CircuitSenseThread::getInstantce();
+    CurrentVizThread* thread = CurrentVizThread::getInstantce();
+    thread->startCurrentVizThread();
+//    thread->startCircuitSenseThread();
     qDebug()<<"Main Thread:: ID: "<<this->thread()->currentThreadId();
 
     ui->baudRateBox->setInsertPolicy(QComboBox::NoInsert);
@@ -69,20 +70,31 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->serialPortInfoListBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(checkCustomDevicePathPolicy(int)));
 
-    connect(thread, &CircuitSenseThread::onError,
-                this, &SettingsDialog::handleError);
+    connect(thread, &CurrentVizThread::onError,this, &SettingsDialog::handleError);
 
 //    connect(thread, &CircuitSenseThread::r, this, &SettingsDialog::readData, Qt::BlockingQueuedConnection);
 
-    connect(thread, &CircuitSenseThread::onConnected, this, &SettingsDialog::onConnected);
+    connect(thread, &CurrentVizThread::onConnected, this, &SettingsDialog::onConnected);
 
-    connect(thread, &CircuitSenseThread::onDisconnected, this, &SettingsDialog::onDisconnected);
+    connect(thread, &CurrentVizThread::onDisconnected, this, &SettingsDialog::onDisconnected);
 
-    connect(this, &SettingsDialog::connectCurrentViz, thread, &CircuitSenseThread::connectSerialPort);
+//    connect(thread, &CircuitSenseThread::onError,
+//                this, &SettingsDialog::handleError);
 
-    connect(this, &SettingsDialog::disconnectCurrentViz, thread, &CircuitSenseThread::disconnectSerialPort);
+//    connect(thread, &CircuitSenseThread::onConnected, this, &SettingsDialog::onConnected);
 
-    connect(this, &SettingsDialog::closeCurrentViz, thread, &CircuitSenseThread::close);
+//    connect(thread, &CircuitSenseThread::onDisconnected, this, &SettingsDialog::onDisconnected);
+
+//    connect(this, &SettingsDialog::connectCurrentViz, thread, &CircuitSenseThread::connectSerialPort);
+
+//    connect(this, &SettingsDialog::disconnectCurrentViz, thread, &CircuitSenseThread::disconnectSerialPort);
+
+//    connect(this, &SettingsDialog::closeCurrentViz, thread, &CircuitSenseThread::close);
+    connect(this, &SettingsDialog::connectCurrentViz, thread, &CurrentVizThread::connectSerialPort);
+
+    connect(this, &SettingsDialog::disconnectCurrentViz, thread, &CurrentVizThread::disconnectSerialPort);
+
+    connect(this, &SettingsDialog::closeCurrentViz, thread, &CurrentVizThread::close);
 
     fillPortsParameters();
     fillPortsInfo();
@@ -91,7 +103,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
 SettingsDialog::~SettingsDialog()
 {
-    CircuitSenseThread* thread = CircuitSenseThread::getInstantce();
+     CurrentVizThread* thread = CurrentVizThread::getInstantce();
+//    CircuitSenseThread* thread = CircuitSenseThread::getInstantce();
     closeSerialPort();
     thread->close();
     delete ui;

@@ -25,7 +25,7 @@
 #include <QtMath>
 float threshold = 0.006;
 float min = 5;
-float max = 150;
+float max = 550;
 #define ALLMOUSEBUTTONS (Qt::LeftButton | Qt::MidButton | Qt::RightButton | Qt::XButton1 | Qt::XButton2)
 Current::Current(ConnectorItem *item1, ConnectorItem *item2, bool main)
     :QObject() , QGraphicsItem()
@@ -63,7 +63,7 @@ void Current::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
     if (infoGraphicsView != NULL) {
         infoGraphicsView->hoverEnterCurrent(event, this);
     }
-    setToolTip(QString("%1").arg(currentValue));
+    setToolTip(QString("%1mA").arg(currentValue * 1000));
     hoverUpdate();
 }
 void Current::hoverLeaveEvent(QGraphicsSceneHoverEvent * event ){

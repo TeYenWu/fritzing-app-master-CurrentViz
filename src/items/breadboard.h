@@ -64,9 +64,11 @@ protected:
     bool setUpImage(ModelPart* modelPart, const LayerHash & viewLayers, LayerAttributes &);
     QVector< QVector<Current *> > m_currentList;
     QVector< QVector<Current *> > b_currentList;
+    QVector< ConnectorItem * > m_items;
     QList<ConnectorItem *> items;
     QList<ConnectorItem *> connectorItems;
-    QTimer * m_timer;
+    QTimer * connectorItem_timer;
+    QTimer * insert_timer;
 
 //    QList< double > nodeX;
 //    QList< double > nodeY;

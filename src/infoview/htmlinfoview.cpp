@@ -251,9 +251,7 @@ void HtmlInfoView::init(bool tinyMode) {
 	m_layerLayout->setSpacing(0);
 	m_layerLayout->setContentsMargins(0, 0, 0, 0);
     m_layerFrame->setLayout(m_layerLayout);
-
-    m_placementLayout->addWidget(m_layerFrame, 0, 1);
-
+//    m_placementLayout->addWidget(m_layerFrame, 0, 1);
     makeLocationFrame();
     m_placementLayout->addWidget(m_locationLabel, 1, 0);
     m_placementLayout->addWidget(m_locationFrame, 1, 1);

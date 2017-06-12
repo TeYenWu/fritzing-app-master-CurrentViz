@@ -71,7 +71,7 @@ void NonConnectorItem::paint( QPainter * painter, const QStyleOptionGraphicsItem
 
 	if (doNotPaint()) return;
 
-	painter->setOpacity(m_opacity);
+    painter->setOpacity(m_opacity);
 
     /*
 	DebugDialog::debug(QString("id:%1 %2 w:%3 %4 c:%5 ec:%6 er:%7 neg:%8 w:%9")
