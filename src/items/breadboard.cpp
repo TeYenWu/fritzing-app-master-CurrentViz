@@ -41,12 +41,11 @@ Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const V
 {
     CurrentVizThread* thread = CurrentVizThread::getInstantce();
     connect(thread, &CurrentVizThread::readyRead, this, &Breadboard::readData, Qt::BlockingQueuedConnection);
-//    CircuitSenseThread* thread1 = CircuitSenseThread::getInstantce();
-//    connect(thread1, &CircuitSenseThread::senseChangedClips, this, &Breadboard::onSensingClips, Qt::BlockingQueuedConnection);
-//    connect(thread1, &CircuitSenseThread::recognizeComponent, this, &Breadboard::recognizeComponent, Qt::BlockingQueuedConnection);
+
     connectorItem_timer = new QTimer(this);
     connect(connectorItem_timer, SIGNAL(timeout()), this, SLOT(autoDetection()));
-    connectorItem_timer->start(2000);
+    connectorItem_timer->start(1000);
+    isInit = false;
 //    insert_timer = new QTimer(this);
 //    connect(insert_timer, SIGNAL(timeout()), this, SLOT(detectInsert()));
 }
@@ -54,7 +53,12 @@ Breadboard::Breadboard( ModelPart * modelPart, ViewLayer::ViewID viewID, const V
 
 Breadboard::~Breadboard() {
 //    // destructor currentItem
+    if(m_currentList.size() < nRowOfCurrent)
+        return;
+
     for(int col_index = 0 ; col_index < 24 ; col_index ++){
+        if(m_currentList.at(col_index).size() < 10)
+            return;
         for(int row_index = 0 ; row_index < 10 ; row_index ++){
             delete m_currentList[col_index][row_index];
         }
@@ -70,13 +74,13 @@ void Breadboard::test(){
                 continue;
             }
 //            m_currentList[i][j]->setCurrentValue(0.04);
-            if(i==3&&j<5)
-                m_currentList[i][j]->setCurrentValue(0.0252);
-            else if (i == 2 && j<5 && j>=1)
-                m_currentList[i][j]->setCurrentValue(-0.528);
-            else if (i ==4 && j < 5 )
-                m_currentList[i][j]->setCurrentValue(0.4732);
-            m_currentList[i][j]->start(inOrOut);
+//            if(i==3&&j<5)
+//                m_currentList[i][j]->setCurrentValue(0.0252);
+//            else if (i == 2 && j<5 && j>=1)
+//                m_currentList[i][j]->setCurrentValue(-0.528);
+//            else if (i ==4 && j < 5 )
+//                m_currentList[i][j]->setCurrentValue(0.4732);
+//            m_currentList[i][j]->start(inOrOut);
 
         }
     }
@@ -108,6 +112,8 @@ void Breadboard::hoverUpdate()
 
 void Breadboard::autoDetection(){
 
+    if(!isInit)
+        return;
     float min = 5;
     float max = 550;
     for(int i = 0; i < items.size(); i++){
@@ -123,6 +129,9 @@ void Breadboard::autoDetection(){
                 value = m_currentList[i/10][i%10]->getCurrentValue() - m_currentList[i/10][i%10 -1]->getCurrentValue();
 
             }
+//            if( j == 4 || j == 9){
+//                continue;
+//            }
             if(qAbs(value)*1000 >= min && qAbs(value)*1000 < max/4)
                 wireColor = QColor(0, qAbs(value)*255000/(max/4),255, 255);
             else if (qAbs(value)*1000 >= max/4 && qAbs(value)*1000 < max/2)
@@ -132,14 +141,14 @@ void Breadboard::autoDetection(){
             else if (qAbs(value)*1000 >= 3 * max/4 && qAbs(value)*1000 < max)
                 wireColor = QColor(255, qAbs(255-qAbs(value)*255000/max), 0, 255);
             Wire * wire = (Wire *)item->connectedToItems().at(0)->attachedTo();
-            wire->setColor(QColor(255,0,0,255), 1);
+            wire->setColor(wireColor, 1);
         }
     }
 }
 
 void Breadboard::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
     PaletteItem::hoverEnterEvent(event);
-    this->test();
+//    this->test();
 }
 
 void Breadboard::hoverMoveEvent ( QGraphicsSceneHoverEvent * event ){
@@ -174,6 +183,7 @@ void Breadboard::paintBody(QPainter *painter, const QStyleOptionGraphicsItem *op
     ItemBase::paintBody(painter, option, widget);
 }
 void Breadboard::readData(CurrentValue *current){
+    isInit = true;
 //    if(current->row == 4||current->row == 3 || current->row == 8 || current->row == 12)
         if(m_currentList.size() != 0 && current->pin < 5)
             m_currentList[current->row][current->pin]->setCurrentValue(current->value);

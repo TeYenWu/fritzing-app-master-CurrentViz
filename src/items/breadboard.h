@@ -82,6 +82,7 @@ public:
 	bool rotation45Allowed();
 
 private:
+    bool isInit;
     Current* m_current;
 };
 

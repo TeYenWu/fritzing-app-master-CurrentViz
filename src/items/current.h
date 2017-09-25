@@ -36,6 +36,7 @@ public slots:
 protected:
     QColor currentColor;
     bool testing = false;
+    bool isInit = false;
     int m_state = 0;
     QTimer * m_timerBlink;
     bool m_inactive;

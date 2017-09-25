@@ -45,6 +45,7 @@ Current::Current(ConnectorItem *item1, ConnectorItem *item2, bool main)
     this->setPos(firstItem->scenePos());
     this->setZValue(0);
     this->hide();
+//    this->setToolTip();
 }
 
 
@@ -63,8 +64,8 @@ void Current::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
     if (infoGraphicsView != NULL) {
         infoGraphicsView->hoverEnterCurrent(event, this);
     }
-    setToolTip(QString("%1mA").arg(currentValue * 1000));
-    hoverUpdate();
+    setToolTip(QString("<FONT SIZE=20> %1mA </FONT>").arg(currentValue * 1000));
+//    hoverUpdate();
 }
 void Current::hoverLeaveEvent(QGraphicsSceneHoverEvent * event ){
     DebugDialog::debug(QString("%1").arg(this->zValue()));
@@ -79,9 +80,13 @@ bool Current::inHover(){
     return !m_inactive;
 }
 void Current::hoverUpdate() {
-    this->update();
+//    this->update();
 }
 void Current::setCurrentValue(float value){
+    if(!isInit)
+    {
+        start(true);
+    }
     if(value < threshold && value > -threshold){
         currentValue = 0;
         this->setZValue(0);
