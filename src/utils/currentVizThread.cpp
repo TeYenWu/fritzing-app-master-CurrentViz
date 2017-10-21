@@ -24,6 +24,7 @@ CurrentVizThread::CurrentVizThread()
     m_pin = 0;
     waitTimeForWritten = 3000;
     waitTimeForRead = 3000;
+
     qDebug()<< "Create Thread ThreadID:  " << currentThreadId();
 
 }
@@ -69,10 +70,10 @@ void CurrentVizThread::readData(QSerialPort* serialPort)
 
     if(serialPort->waitForReadyRead(waitTimeForRead))
     {
+        currentList.clear();
         for(int i=0; i < 240 ; i++)
         {
-            while(serialPort->bytesAvailable() < 2)
-                serialPort->waitForReadyRead(10);
+            while(serialPort->bytesAvailable() < 2 && serialPort->waitForReadyRead(10));
             {
                 QMutexLocker locker(&m_mutex);
                 QByteArray data;
@@ -80,19 +81,21 @@ void CurrentVizThread::readData(QSerialPort* serialPort)
                 QByteArray data_hex = data.toHex();
 //                if(count == 2)
 //                     qDebug() << "Reading 2 Bytes";
-                CurrentValue* current = new CurrentValue();
+                CurrentValue current;
                 unsigned short value = (data.at(0) & 0x00FF)|((data.at(1) & 0x000F) << 8);
-                DebugDialog::debug(QString("%1 %2 %3 %4 %5").arg(data_hex[0]).arg(data_hex[1]).arg(data_hex[2]).arg(data_hex[3]).arg(value));
+                //DebugDialog::debug(QString("%1 %2 %3 %4 %5").arg(data_hex[0]).arg(data_hex[1]).arg(data_hex[2]).arg(data_hex[3]).arg(value));
                 float gain = (data[1] >> 4) & 0x01 ? 100.0f : 10.0f;
-                current->value = (((float(value) -2048) / 2048) * 5 / (gain)) / 0.1f;
-                current->row = i/10;
-                current->pin = i%10;
-                DebugDialog::debug(QString("%1 %2 %3").arg(current->value).arg(current->row).arg(current->pin));
-                if(current->pin == 4 || current->pin == 9) continue;
-                emit readyRead(current);
+                current.value = (((float(value) -2048) / 2048) * 5 / (gain)) / 0.1f;
+                current.row = i/10;
+                current.pin = i%10;
+                if(current.pin == 4 || current.pin == 9) continue;
+//                DebugDialog::debug(QString("%1 %2 %3").arg(current->value).arg(current->row).arg(current->pin));
+                currentList.append(current);
+
             }
         }
-        msleep(1000);
+        emit readyRead(currentList);
+        msleep(500);
         qDebug() << "Reading Finished";
     }
 }

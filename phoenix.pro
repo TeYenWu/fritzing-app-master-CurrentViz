@@ -64,7 +64,7 @@ win32 {
 	Debug:UI_DIR = $${DEBDIR}
 }
 macx {
-
+        QMAKE_MAC_SDK = macosx10.12
         RELDIR = ../release64
         DEBDIR = ../debug64
         Release:DESTDIR = $${RELDIR}

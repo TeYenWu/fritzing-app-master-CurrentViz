@@ -103,10 +103,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
 SettingsDialog::~SettingsDialog()
 {
-     CurrentVizThread* thread = CurrentVizThread::getInstantce();
+     //CurrentVizThread* thread = CurrentVizThread::getInstantce();
 //    CircuitSenseThread* thread = CircuitSenseThread::getInstantce();
-    closeSerialPort();
-    thread->close();
+    //closeSerialPort();
+    //thread->close();
     delete ui;
 }
 

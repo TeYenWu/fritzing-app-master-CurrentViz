@@ -331,7 +331,10 @@ ConnectorItem::ConnectorItem( Connector * connector, ItemBase * attachedTo )
 
     setAcceptHoverEvents(true);
     this->setCursor((attachedTo && attachedTo->itemType() == ModelPart::Wire) ? *CursorMaster::BendpointCursor : *CursorMaster::MakeWireCursor);
-
+    aboveCurrentDirection = 0;
+    belowCurrentDirection = 0;
+    aboveCurrent = NULL;
+    belowCurrent = NULL;
 }
 
 ConnectorItem::~ConnectorItem() {

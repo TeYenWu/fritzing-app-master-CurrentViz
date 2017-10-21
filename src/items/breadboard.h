@@ -31,6 +31,7 @@ $Date: 2013-03-09 08:18:59 +0100 (Sa, 09. Mrz 2013) $
 #include "current.h"
 #include "../mainwindow/settingsdialog.h"
 #include "../sketch/sketchwidget.h"
+#include "wire.h"
 #include <QPainter>
 #include <QtCore/QList>
 class Breadboard : public PaletteItem 
@@ -57,11 +58,14 @@ public:
     void setUpBranchCurrent();
     void test();
 public slots:
-    void readData(CurrentValue *current);
+    void readData(QVector<CurrentValue> currentList);
     void autoDetection();
 protected:
     void paintBody(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     bool setUpImage(ModelPart* modelPart, const LayerHash & viewLayers, LayerAttributes &);
+    bool adjustCurrentForCircuits(Current* current, int dir);
+
+    QVector<Wire* > m_wireList;
     QVector< QVector<Current *> > m_currentList;
     QVector< QVector<Current *> > b_currentList;
     QVector< ConnectorItem * > m_items;
@@ -76,13 +80,15 @@ protected:
 private:
     void connectoritemPos(double pos, QList< double> &node); // filter similar position
     static bool connectItemComparsion( ConnectorItem *item1 ,  ConnectorItem *item2);
-    const int nRowOfCurrent = 24;
+    const int nColumnOfCurrent = 24;
 
 public:
 	bool rotation45Allowed();
 
 private:
     bool isInit;
+    QVector<Current*> tmpList;
+    QVector<int> visitedNodeList;
     Current* m_current;
 };
 

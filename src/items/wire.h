@@ -67,7 +67,7 @@ public:
 	// for debugging
 	//void setPos(const QPointF & pos);
 	// for debugging
-
+    void setCurrentValue(float value);
     QLineF line() const;
     virtual void setLine(const QLineF &line);
     inline void setLine(double x1, double y1, double x2, double y2);
@@ -247,7 +247,8 @@ protected:
 	class Bezier * m_bezier;
 	bool m_displayBendpointCursor;
     bool m_banded;
-
+    int m_currentValue;
+    int m_state;
 public:
 	static QStringList colorNames;
 	static QHash<QString, QString> colorTrans;

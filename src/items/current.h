@@ -20,6 +20,12 @@ public:
     ~Current();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
+    bool isAdjusted;
+    ConnectorItem *firstItem;
+    ConnectorItem *secondItem;
+    float currentValue = 0;
+    int row;
+    int column;
     //QPainterPath shape() const;
     void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
     void hoverLeaveEvent( QGraphicsSceneHoverEvent * event );
@@ -31,6 +37,7 @@ public:
     void paintCurrent(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget, int value);
     float getCurrentValue();
     void start(bool inOrOut);
+    void setNodeDirection(float value);
 public slots:
     void test();
 protected:
@@ -43,14 +50,13 @@ protected:
     bool m_spaceBarWasPressed;
     bool m_hoverEnterSpaceBarWasPressed;
     bool m_main;
-    float currentValue = 0;
+
     QPainter *m_painter;
     const QStyleOptionGraphicsItem *m_option;
     QWidget *m_widget;
     qreal width;
     qreal height;
-    ConnectorItem *firstItem;
-    ConnectorItem *secondItem;
+
 };
 
 #endif // CURRENT_H

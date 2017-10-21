@@ -268,6 +268,38 @@ void Wire::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QW
 	if (m_hidden) return;
 
 	ItemBase::paint(painter, option, widget);
+
+    float triangleLength = 50;
+    int number = line().length()/triangleLength;
+
+    for(int i=0;i<number-1;i++)
+    {
+        QPainterPath path;
+        qreal offset = triangleLength/10 * m_state;
+        qreal angle = line().angle();
+        qreal lineWidth = 20;
+        QPointF unitVector = line().unitVector().p2() - line().unitVector().p1();
+        QPointF normalVector = line().normalVector().p2() - line().normalVector().p1();
+        QPointF pointX = line().p1() + unitVector * triangleLength * m_state / 100 + unitVector*triangleLength*i;
+        QPointF point1 = pointX + normalVector*lineWidth/2;
+        QPointF point2 = pointX - normalVector*lineWidth/2;
+        QPointF point3 = pointX + normalVector*triangleLength;
+
+        path.moveTo(point1);
+        path.lineTo(point2);
+        path.lineTo(point3);
+        path.lineTo(point1);
+        painter->fillPath (path, QBrush (QColor(1,1,1,1)));
+    }
+
+    if(m_state >= 100)
+    {
+        m_state = 0;
+    }
+    else
+    {
+        m_state ++;
+    }
 }
 
 void Wire::paintBody(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget ) 
@@ -1171,6 +1203,24 @@ void Wire::setColor(const QColor & color, double op) {
 	m_opacity = op;
 	m_colorName = color.name();
 	this->update();
+}
+
+void Wire::setCurrentValue(float value)
+{
+    float min = 5;
+    float max = 100;
+    QColor wireColor;
+    if(qAbs(value)*1000 >= min && qAbs(value)*1000 < max/4)
+        wireColor = QColor(0, qAbs(value)*255000/(max/4),255, 255);
+    else if (qAbs(value)*1000 >= max/4 && qAbs(value)*1000 < max/2)
+        wireColor = QColor(0, 255, qAbs(255-((qAbs(value)*1000-max/4)/(max/4))*255), 255);
+    else if (qAbs(value)*1000 >= max / 2 && qAbs(value)*1000 < 3 * max/4)
+        wireColor = QColor(((qAbs(value)*1000-max/2)/(max/4))*255,255, 0, 255);
+    else if (qAbs(value)*1000 >= 3 * max/4 && qAbs(value)*1000 < max)
+        wireColor = QColor(255, qAbs(255-((qAbs(value)*1000- max*3/4)/(max/4))*255), 0, 255);
+    this->setColor(wireColor, 1);
+    m_currentValue = value;
+
 }
 
 void Wire::setShadowColor(QColor & color, bool restore) {

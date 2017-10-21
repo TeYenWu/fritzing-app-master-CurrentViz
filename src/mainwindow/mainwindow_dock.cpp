@@ -65,7 +65,7 @@ void MainWindow::createDockWindows()
 
     makeDock(BinManager::Title, m_binManager, PartsBinMinHeight, PartsBinHeightDefault/*, Qt::LeftDockWidgetArea*/);
 
-    makeDock(tr("Inspector"), m_infoView, InfoViewMinHeight, InfoViewHeightDefault);
+//    makeDock(tr("Inspector"), m_infoView, InfoViewMinHeight, InfoViewHeightDefault);
 
     makeDock(tr("CurrentViz Settings"), m_settingView, 100, 100);
 //    makeDock(tr("CircuitSense Settings"), m_settingView, 100, 100);
@@ -212,9 +212,9 @@ void MainWindow::dontKeepMargins() {
 void MainWindow::initDock() {
 	m_layerPalette = new LayerPalette(this);
 
-	m_infoView = new HtmlInfoView();
-    m_infoView->init(false);
-    connect(m_infoView, SIGNAL(clickObsoleteSignal()), this, SLOT(selectAllObsolete()));
+//	m_infoView = new HtmlInfoView();
+//    m_infoView->init(false);
+//    connect(m_infoView, SIGNAL(clickObsoleteSignal()), this, SLOT(selectAllObsolete()));
 	//DebugDialog::debug("after html view");
 
     m_settingView = new SettingsDialog(this);

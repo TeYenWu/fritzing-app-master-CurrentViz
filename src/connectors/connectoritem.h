@@ -35,6 +35,11 @@ $Date: 2013-04-28 13:51:10 +0200 (So, 28. Apr 2013) $
 #include <QGraphicsLineItem>
 
 class LegItem;
+class Current;
+const int CURRENT_DIRECTION_NONE=0;
+const int CURRENT_DIRECTION_UP=1;
+const int CURRENT_DIRECTION_DOWN=2;
+const int CURRENT_DIRECTION_CONFLUENCE=3;
 
 class ConnectorItemAction : public QAction {
 	Q_OBJECT
@@ -58,6 +63,10 @@ public:
 	ConnectorItem(Connector *, ItemBase* attachedTo);
 	~ConnectorItem();
     bool m_rubberBandLeg;
+    int aboveCurrentDirection;
+    int belowCurrentDirection;
+    Current* aboveCurrent;
+    Current* belowCurrent;
 	Connector * connector();
 	void connectorHover(class ItemBase *, bool hovering);
 	bool connectorHovering();

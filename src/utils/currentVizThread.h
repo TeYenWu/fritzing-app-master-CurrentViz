@@ -30,7 +30,7 @@ public:
     bool test = false;
 
 signals:
-    void readyRead(CurrentValue*);
+    void readyRead(QVector<CurrentValue>);
     void onError(QString error);
     void onConnected();
     void onDisconnected();
@@ -40,6 +40,7 @@ public slots:
     void close();
 
 private:
+    QVector<CurrentValue> currentList;
     int waitTimeForWritten;
     int waitTimeForRead;
     QMutex m_mutex;

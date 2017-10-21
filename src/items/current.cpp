@@ -23,9 +23,9 @@
 #include "../items/wire.h"
 #include <QVector2D>
 #include <QtMath>
-float threshold = 0.006;
+float threshold = 0.006; //0.006
 float min = 5;
-float max = 550;
+float max = 100;
 #define ALLMOUSEBUTTONS (Qt::LeftButton | Qt::MidButton | Qt::RightButton | Qt::XButton1 | Qt::XButton2)
 Current::Current(ConnectorItem *item1, ConnectorItem *item2, bool main)
     :QObject() , QGraphicsItem()
@@ -33,7 +33,9 @@ Current::Current(ConnectorItem *item1, ConnectorItem *item2, bool main)
     m_inactive = false;
     m_hoverEnterSpaceBarWasPressed = m_spaceBarWasPressed = false;
     firstItem = item1;
+    firstItem->aboveCurrent = this;
     secondItem = item2;
+    secondItem->belowCurrent = this;
     m_main = main;
     if(m_main){
         width = item1->boundingRect().width();
@@ -86,6 +88,7 @@ void Current::setCurrentValue(float value){
     if(!isInit)
     {
         start(true);
+        isInit = true;
     }
     if(value < threshold && value > -threshold){
         currentValue = 0;
@@ -100,16 +103,41 @@ void Current::setCurrentValue(float value){
             if(qAbs(value)*1000 >= min && qAbs(value)*1000 < max/4)
                 currentColor = QColor(0, qAbs(value)*255000/(max/4),255, 255);
             else if (qAbs(value)*1000 >= max/4 && qAbs(value)*1000 < max/2)
-                currentColor = QColor(0, 255, qAbs(255-qAbs(value)*255000/(max/2)), 255);
+                currentColor = QColor(0, 255, qAbs(255-((qAbs(value)*1000-max/4)/(max/4))*255), 255);
             else if (qAbs(value)*1000 >= max / 2 && qAbs(value)*1000 < 3 * max/4)
-                currentColor = QColor(qAbs(value)*255000/(3*max/4) ,255, 0, 255);
+                currentColor = QColor(((qAbs(value)*1000-max/2)/(max/4))*255,255, 0, 255);
             else if (qAbs(value)*1000 >= 3 * max/4 && qAbs(value)*1000 < max)
-                currentColor = QColor(255, qAbs(255-qAbs(value)*255000/max), 0, 255);
-            this->update();
+                currentColor = QColor(255, qAbs(255-((qAbs(value)*1000- max*3/4)/(max/4))*255), 0, 255);
+            //this->update();
         }
+        setNodeDirection(value);
         currentValue = value;
     }
 }
+void Current::setNodeDirection(float value)
+{
+    firstItem->aboveCurrentDirection = CURRENT_DIRECTION_NONE;
+    if(value < 0)
+    {
+       firstItem->aboveCurrentDirection = CURRENT_DIRECTION_DOWN;
+    }
+    else if (value > 0)
+    {
+       firstItem->aboveCurrentDirection = CURRENT_DIRECTION_UP;
+    }
+
+    secondItem->belowCurrentDirection = CURRENT_DIRECTION_NONE;
+    if(value < 0)
+    {
+       secondItem->belowCurrentDirection = CURRENT_DIRECTION_DOWN;
+    }
+    else if (value > 0)
+    {
+       secondItem->belowCurrentDirection = CURRENT_DIRECTION_UP;
+    }
+
+}
+
 void Current::start(bool inOrOut){
     m_main = inOrOut;
     QTimer *timer = new QTimer(this);
